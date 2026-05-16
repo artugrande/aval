@@ -5,6 +5,7 @@ import {useAccount, useReadContract, useWriteContract, useWaitForTransactionRece
 
 import {erc20Abi, FAUCET_MAX_MICRO, getContracts, isDeployed, lendingPoolAbi, mockUsdcAbi} from "@/lib/contracts";
 import {useChainId} from "wagmi";
+import {WrongChainNotice} from "@/components/WrongChainNotice";
 import {formatUsdc, parseUsdc, snowtraceUrl} from "@/lib/format";
 
 export default function LendPage() {
@@ -59,8 +60,8 @@ export default function LendPage() {
     const {writeContract, isPending} = useWriteContract();
     const {isLoading: isMining, isSuccess} = useWaitForTransactionReceipt({hash: txHash});
 
-    if (!deployed) return <NotDeployedNotice />;
     if (!isConnected) return <ConnectNotice />;
+    if (!deployed) return <WrongChainNotice />;
 
     const parsed = safeParse(amount);
     const needsApproval = mode === "deposit" && parsed != null && (allowance ?? 0n) < parsed;
@@ -247,23 +248,11 @@ function Tab({active, onClick, children}: {active: boolean; onClick: () => void;
     );
 }
 
-function NotDeployedNotice() {
-    return (
-        <main className="mx-auto max-w-3xl px-6 py-20 text-center">
-            <h1 className="text-2xl font-semibold">Aún no desplegado en Fuji</h1>
-            <p className="mt-3 text-zinc-500">
-                Corré <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">forge script</code> y
-                pegá las addresses en <code>web/.env.local</code>.
-            </p>
-        </main>
-    );
-}
-
 function ConnectNotice() {
     return (
         <main className="mx-auto max-w-3xl px-6 py-20 text-center">
             <h1 className="text-2xl font-semibold">Conectá tu wallet</h1>
-            <p className="mt-3 text-zinc-500">Usá el botón arriba a la derecha. Aval funciona en Avalanche Fuji.</p>
+            <p className="mt-3 text-zinc-500">Usá el botón arriba a la derecha para empezar.</p>
         </main>
     );
 }

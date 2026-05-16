@@ -11,7 +11,9 @@ export default function Home() {
             {/* ───── Hero ───── */}
             <section className="mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
                 <h1 className="text-5xl font-semibold leading-tight tracking-tight sm:text-6xl">
-                    Crédito global para PyMEs de LatAm.
+                    Crédito global para
+                    <br />
+                    PyMEs de LatAm.
                 </h1>
                 <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
                     Accedé a financiamiento en dólares digitales de forma rápida, transparente y sin depender de

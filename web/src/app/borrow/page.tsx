@@ -20,6 +20,7 @@ import {useChainId} from "wagmi";
 import {formatUsdc, parseUsdc, snowtraceUrl} from "@/lib/format";
 import {kybSubmit, scoreAttest, type AttestationResponse, type KybSubmitResponse} from "@/lib/api";
 import {useBorrowerLoans} from "@/hooks/useBorrowerLoans";
+import {WrongChainNotice} from "@/components/WrongChainNotice";
 
 export default function BorrowPage() {
     const {address, isConnected} = useAccount();
@@ -59,9 +60,8 @@ export default function BorrowPage() {
 
     const refreshKyb = () => setKyb(null);
 
-    if (!isDeployed(contracts.creditManager))
-        return <Notice title="Aún no desplegado" body="Corré forge script y pegá las addresses en web/.env.local." />;
-    if (!isConnected) return <Notice title="Conectá tu wallet" body="Aval funciona en Avalanche Fuji." />;
+    if (!isConnected) return <Notice title="Conectá tu wallet" body="Usá el botón arriba a la derecha para empezar." />;
+    if (!isDeployed(contracts.creditManager)) return <WrongChainNotice />;
 
     return (
         <main className="mx-auto max-w-3xl px-6 py-12">
