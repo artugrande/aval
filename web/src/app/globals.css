@@ -41,6 +41,10 @@ body {
 }
 body {
     overflow-x: hidden;
+    /* Reserve space for the fixed glass nav (72px). Full-bleed sections like
+       .hero compensate with margin-top:-72px so the shader extends behind the
+       nav for the glassmorphism effect. */
+    padding-top: 72px;
 }
 a {
     color: inherit;
@@ -180,6 +184,8 @@ nav.top .inner {
     justify-content: center;
     padding: 120px 0 80px;
     overflow: hidden;
+    /* Cancel body's padding-top so the shader extends back under the nav */
+    margin-top: -72px;
 }
 .hero canvas {
     position: absolute;

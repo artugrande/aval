@@ -20,6 +20,10 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
     title: "Aval — Credit for LatAm SMEs",
     description: "Uncollateralized USDC credit lines for Latin American SMEs on Avalanche.",
+    icons: {
+        icon: [{url: "/faviconaval.png", type: "image/png"}],
+        apple: [{url: "/faviconaval.png"}],
+    },
 };
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
