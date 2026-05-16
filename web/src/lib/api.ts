@@ -12,7 +12,6 @@ export interface KybReviewInput {
     industry: string;
     businessModel: string;
     monthlyVolume: string;
-    primaryUseCase: string;
     repFullName: string;
     repRole: string;
     repEmail: string;

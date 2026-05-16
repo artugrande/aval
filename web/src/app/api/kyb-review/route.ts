@@ -73,7 +73,6 @@ const BodySchema = z.object({
     industry: z.string().min(2).max(80),
     businessModel: z.string().min(2).max(80),
     monthlyVolume: z.string().min(1).max(40),
-    primaryUseCase: z.string().min(2).max(120),
     repFullName: z.string().min(2).max(120),
     repRole: z.string().min(2).max(80),
     repEmail: z.string().email(),
@@ -149,7 +148,6 @@ export async function POST(req: Request) {
                 industry: body.industry,
                 business_model: body.businessModel,
                 monthly_volume: body.monthlyVolume,
-                primary_use_case: body.primaryUseCase,
                 rep_full_name: body.repFullName,
                 rep_role: body.repRole,
                 rep_email: body.repEmail,
@@ -332,8 +330,7 @@ Datos del negocio:
 - País: ${b.country}
 - Industria: ${b.industry}
 - Modelo de negocio: ${b.businessModel}
-- Volumen mensual esperado: ${b.monthlyVolume}
-- Uso principal: ${b.primaryUseCase}
+- Ingresos mensuales recurrentes: ${b.monthlyVolume}
 - Representante: ${b.repFullName} (${b.repRole})
 - Email: ${b.repEmail}
 - LinkedIn: ${b.repLinkedin ?? "no provisto"}
@@ -342,7 +339,7 @@ ${wavyBlock}
 Aprobar SOLO si TODAS las siguientes condiciones se cumplen:
 1. La razón social suena real (no "Test", "asdf", caracteres random, una sola letra, ni groserías)
 2. El website es una URL plausible (tiene dominio real, no es "google.com" u otro sitio no relacionado)
-3. La combinación de industria + modelo de negocio + uso principal tiene coherencia interna
+3. La combinación de industria + modelo de negocio + volumen mensual tiene coherencia interna
 4. El email parece corporativo y matchea el dominio del website, o es un email personal creíble
 5. La URL de LinkedIn (si se provee) está en formato linkedin.com/in/...
 6. El país NO está en la lista de sancionados: ${SANCTIONED_COUNTRIES.join(", ")}

@@ -34,7 +34,6 @@ type ProfileStatus = KybStatusResponse["status"];
 const INDUSTRIES = ["SaaS", "Ecommerce", "Agency", "Marketplace", "Import/Export", "Fintech", "Crypto/Web3", "Education", "Professional Services", "Manufacturing", "Other"] as const;
 const BUSINESS_MODELS = ["B2B", "B2C", "Subscription", "Services", "Marketplace", "Trading"] as const;
 const VOLUMES = ["<1k USD", "1k–10k USD", "10k–50k USD", "50k+ USD"] as const;
-const USE_CASES = ["Capital de trabajo", "Pago a proveedores", "Compra de inventario", "Operaciones internacionales", "Treasury", "Payroll", "Crypto operations"] as const;
 const COUNTRIES: Array<{code: "MX" | "AR" | "BR" | "CO" | "PE" | "CL" | "UY"; label: string}> = [
     {code: "MX", label: "México (RFC)"},
     {code: "AR", label: "Argentina (CUIT)"},
@@ -177,7 +176,6 @@ function KybForm({
         businessModel: "" as (typeof BUSINESS_MODELS)[number] | "",
         // Expected Usage
         monthlyVolume: "" as (typeof VOLUMES)[number] | "",
-        primaryUseCase: "" as (typeof USE_CASES)[number] | "",
         // Representative
         repFullName: "",
         repRole: "",
@@ -203,7 +201,6 @@ function KybForm({
                 industry: form.industry as string,
                 businessModel: form.businessModel as string,
                 monthlyVolume: form.monthlyVolume as string,
-                primaryUseCase: form.primaryUseCase as string,
                 repFullName: form.repFullName.trim(),
                 repRole: form.repRole.trim(),
                 repEmail: form.repEmail.trim(),
@@ -223,7 +220,7 @@ function KybForm({
 
     const requiredFilled =
         form.businessName && form.website && form.industry && form.businessModel && form.monthlyVolume &&
-        form.primaryUseCase && form.repFullName && form.repRole && form.repEmail;
+        form.repFullName && form.repRole && form.repEmail;
 
     return (
         <form onSubmit={onSubmit} className="mt-8 space-y-6">
@@ -259,17 +256,11 @@ function KybForm({
                 </Field>
             </Section>
 
-            <Section title="3. Uso esperado">
+            <Section title="3. Ingresos mensuales recurrentes">
                 <Field label="Volumen mensual">
                     <select className="input" required value={form.monthlyVolume} onChange={(e) => setForm({...form, monthlyVolume: e.target.value as typeof form.monthlyVolume})}>
                         <option value="" disabled>Seleccionar</option>
                         {VOLUMES.map((v) => <option key={v} value={v}>{v}</option>)}
-                    </select>
-                </Field>
-                <Field label="Uso principal">
-                    <select className="input" required value={form.primaryUseCase} onChange={(e) => setForm({...form, primaryUseCase: e.target.value as typeof form.primaryUseCase})}>
-                        <option value="" disabled>Seleccionar</option>
-                        {USE_CASES.map((u) => <option key={u} value={u}>{u}</option>)}
                     </select>
                 </Field>
             </Section>
