@@ -4,6 +4,8 @@ import Link from "next/link";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
 import {usePathname} from "next/navigation";
 
+import {AvalFaucetToast} from "./AvalFaucetToast";
+
 const links = [
     {href: "/lend", label: "Lend"},
     {href: "/borrow", label: "Borrow"},
@@ -76,6 +78,7 @@ export function Header() {
                     </ConnectButton.Custom>
                 </div>
             </div>
+            <AvalFaucetToast />
         </nav>
     );
 }
