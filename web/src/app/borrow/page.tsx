@@ -232,7 +232,7 @@ function KybForm({
                     <input className="input" required value={form.businessName} onChange={(e) => setForm({...form, businessName: e.target.value})} placeholder="Software Factory S.A." />
                 </Field>
                 <Field label="Website">
-                    <input className="input" required value={form.website} onChange={(e) => setForm({...form, website: e.target.value})} placeholder="https://laesperanza.mx" />
+                    <input className="input" required value={form.website} onChange={(e) => setForm({...form, website: e.target.value})} placeholder="https://tusoftwareconia.mx" />
                 </Field>
                 <Field label="País">
                     <select className="input" value={form.country} onChange={(e) => setForm({...form, country: e.target.value as typeof form.country})}>
@@ -282,7 +282,7 @@ function KybForm({
                     <input className="input" required value={form.repRole} onChange={(e) => setForm({...form, repRole: e.target.value})} placeholder="Founder, CEO, COO…" />
                 </Field>
                 <Field label="Email corporativo">
-                    <input className="input" type="email" required value={form.repEmail} onChange={(e) => setForm({...form, repEmail: e.target.value})} placeholder="maria@laesperanza.mx" />
+                    <input className="input" type="email" required value={form.repEmail} onChange={(e) => setForm({...form, repEmail: e.target.value})} placeholder="maria@tusoftwareconia.mx" />
                 </Field>
                 <Field label="LinkedIn (opcional)">
                     <input className="input" type="url" value={form.repLinkedin} onChange={(e) => setForm({...form, repLinkedin: e.target.value})} placeholder="https://linkedin.com/in/maria-perez" />
