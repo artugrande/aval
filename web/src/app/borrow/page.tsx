@@ -95,40 +95,55 @@ export default function BorrowPage() {
 
             {error && <ErrorBanner message={error} onClose={() => setError(null)} />}
 
-            {profileLoading && !profile ? (
-                <SkeletonCard />
-            ) : isOnChainApproved ? (
-                <BorrowForm wallet={address!} onError={setError} />
-            ) : dbStatus === "pending_review" ? (
-                <PendingNotice onRefresh={loadStatus} />
-            ) : dbStatus === "rejected" ? (
-                <RejectedNotice
-                    reason={profile?.aiReason ?? "Sin razón provista."}
-                    attempts={profile?.attempts ?? 0}
-                    onRetry={() => setProfile({...profile!, status: "none"})}
-                />
-            ) : dbStatus === "approved" && !isOnChainApproved ? (
-                <OnchainSyncNotice
-                    txHash={profile?.onchainTxHash ?? null}
-                    txChainId={profile?.onchainChainId ?? null}
-                    activeChainId={chainId}
-                    onRefresh={() => {
-                        refetchOnChain();
-                        loadStatus();
-                    }}
-                />
-            ) : (
-                <KybForm
-                    wallet={address!}
-                    chainId={chainId}
-                    onApproved={async () => {
-                        await loadStatus();
-                        await refetchOnChain();
-                    }}
-                    onRejected={(reason) => setProfile({...(profile ?? {} as KybStatusResponse), status: "rejected", aiReason: reason})}
-                    onError={setError}
-                />
-            )}
+            {(() => {
+                if (profileLoading && !profile) return <SkeletonCard />;
+                if (isOnChainApproved) return <BorrowForm wallet={address!} onError={setError} />;
+                if (dbStatus === "pending_review") return <PendingNotice onRefresh={loadStatus} />;
+                if (dbStatus === "rejected") {
+                    return (
+                        <RejectedNotice
+                            reason={profile?.aiReason ?? "Sin razón provista."}
+                            attempts={profile?.attempts ?? 0}
+                            onRetry={() => setProfile({...profile!, status: "none"})}
+                        />
+                    );
+                }
+                // Only show the "on-chain sync" notice if we ACTUALLY fired an on-chain tx.
+                // Legacy auto-approved rows from the old kyb-submit flow have status='approved'
+                // but no onchainTxHash → fall through to the KYB form so the user can submit
+                // a fresh review and get registered on-chain properly.
+                if (dbStatus === "approved" && profile?.onchainTxHash && !isOnChainApproved) {
+                    return (
+                        <OnchainSyncNotice
+                            txHash={profile.onchainTxHash}
+                            txChainId={profile.onchainChainId ?? null}
+                            activeChainId={chainId}
+                            onRefresh={() => {
+                                refetchOnChain();
+                                loadStatus();
+                            }}
+                        />
+                    );
+                }
+                return (
+                    <KybForm
+                        wallet={address!}
+                        chainId={chainId}
+                        onApproved={async () => {
+                            await loadStatus();
+                            await refetchOnChain();
+                        }}
+                        onRejected={(reason) =>
+                            setProfile({
+                                ...((profile ?? {}) as KybStatusResponse),
+                                status: "rejected",
+                                aiReason: reason,
+                            })
+                        }
+                        onError={setError}
+                    />
+                );
+            })()}
         </main>
     );
 }
