@@ -428,6 +428,156 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* ===== For lenders ===== */}
+            <section id="lenders" className="landing">
+                <div className="container">
+                    <div className="reveal">
+                        <div className="eyebrow-2">Para lenders</div>
+                        <h2 className="section-title">Yield transparente. Riesgo verificable.</h2>
+                        <p className="section-lead">
+                            Construido para que veas exactamente cómo se genera tu rendimiento y dónde está tu plata —
+                            sin promesas, sin caja negra, sin tokens de incentivo inflados.
+                        </p>
+                    </div>
+
+                    <div className="features-grid">
+                        <FeatureCard
+                            iconSvg={
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="12" y1="20" x2="12" y2="4" />
+                                    <polyline points="6 10 12 4 18 10" />
+                                </svg>
+                            }
+                            title="Yield del pool real"
+                            body={
+                                <>
+                                    <p>
+                                        Tu rendimiento son las fees que pagan los borrowers — entre <strong>1% y 5%</strong>{" "}
+                                        por préstamo a término. El pool acumula fees → tus shares <span className="mono">avUSDC</span>{" "}
+                                        valen más con el tiempo.
+                                    </p>
+                                    <p className="note">Sin yield prometido. Sin caja negra. Solo flujo real de repagos.</p>
+                                </>
+                            }
+                        />
+                        <FeatureCard
+                            iconSvg={
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    <polyline points="9 12 11 14 15 10" />
+                                </svg>
+                            }
+                            title="Gate de IA antes de cada préstamo"
+                            body={
+                                <>
+                                    <p>
+                                        Ningún borrower toca tu liquidez sin pasar por la revisión KYB con Claude Haiku 4.5.
+                                    </p>
+                                    <p className="note">
+                                        La aprobación queda en el <span className="mono">BorrowerRegistry</span>{" "}
+                                        on-chain — auditable por vos en tiempo real.
+                                    </p>
+                                </>
+                            }
+                            delay={0.06}
+                        />
+                        <FeatureCard
+                            iconSvg={
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 21V13M9 21V9M15 21V5M21 21V1" />
+                                </svg>
+                            }
+                            title="Caps que crecen con repagos"
+                            body={
+                                <>
+                                    <p>
+                                        Los borrowers nuevos arrancan con <strong>$100 USDC</strong> de cap. Solo llegan a $20k
+                                        tras 10 préstamos repagados a tiempo.
+                                    </p>
+                                    <p className="note">
+                                        Tu mayor exposición pro-rata es a wallets con historial probado.
+                                    </p>
+                                </>
+                            }
+                            delay={0.12}
+                        />
+                        <FeatureCard
+                            iconSvg={
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                                    <path d="M7 11V7a5 5 0 0110 0v4" />
+                                </svg>
+                            }
+                            title="Sybil-resistant por economía"
+                            body={
+                                <>
+                                    <p>
+                                        Crear wallet + pasar KYB + perder $100 no le compensa a ningún atacante en L1.
+                                    </p>
+                                    <p className="note">
+                                        Un default = <span className="mono">L0</span> + blacklist permanente on-chain. La
+                                        wallet queda quemada para siempre.
+                                    </p>
+                                </>
+                            }
+                            delay={0.05}
+                        />
+                        <FeatureCard
+                            iconSvg={
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            }
+                            title="Auditable en tiempo real"
+                            body={
+                                <>
+                                    <p>
+                                        Cada préstamo, repago y default es una tx pública. Lo mirás vos, tu contador o un
+                                        regulador.
+                                    </p>
+                                    <p className="note">
+                                        Snowtrace + Aval Explorer indexan todo on-chain. Sin gestores opacos.
+                                    </p>
+                                </>
+                            }
+                            delay={0.11}
+                        />
+                        <FeatureCard
+                            iconSvg={
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
+                            }
+                            title="Sin lockup, retiro a demanda"
+                            body={
+                                <>
+                                    <p>
+                                        Tu USDC vive en un pool ERC-4626 standard. Quemás shares → retirás USDC al instante.
+                                    </p>
+                                    <p className="note">
+                                        Sujeto a utilization del pool (los fondos prestados se liberan al repago).
+                                    </p>
+                                </>
+                            }
+                            delay={0.17}
+                        />
+                    </div>
+
+                    <p className="levels-foot" style={{textAlign: "center", marginLeft: "auto", marginRight: "auto"}}>
+                        <strong style={{color: "var(--text)"}}>Riesgo honesto:</strong> en v1 los defaults los absorben los
+                        lenders pro-rata. La tranche junior con first-loss buffer está en el roadmap v2. No prometemos APR
+                        específico — vas a ver el TVL, el yield acumulado del pool y la tasa de default real en{" "}
+                        <Link href="/stats" style={{color: "var(--accent)", textDecoration: "underline"}}>
+                            /stats
+                        </Link>{" "}
+                        en tiempo real.
+                    </p>
+                </div>
+            </section>
+
             {/* ===== Promo cards (Claude / Avalanche) ===== */}
             <section id="partners" className="landing">
                 <div className="container">
