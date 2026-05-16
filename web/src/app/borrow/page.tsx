@@ -257,7 +257,7 @@ function KybForm({
             </Section>
 
             <Section title="3. Ingresos mensuales recurrentes">
-                <Field label="Volumen mensual">
+                <Field label="Volumen mensual" className="sm:col-span-2">
                     <select className="input" required value={form.monthlyVolume} onChange={(e) => setForm({...form, monthlyVolume: e.target.value as typeof form.monthlyVolume})}>
                         <option value="" disabled>Seleccionar</option>
                         {VOLUMES.map((v) => <option key={v} value={v}>{v}</option>)}
@@ -773,9 +773,9 @@ function Section({title, children}: {title: string; children: React.ReactNode}) 
     );
 }
 
-function Field({label, children}: {label: string; children: React.ReactNode}) {
+function Field({label, children, className}: {label: string; children: React.ReactNode; className?: string}) {
     return (
-        <label className="block">
+        <label className={`block ${className ?? ""}`}>
             <span className="text-sm text-zinc-500">{label}</span>
             <div className="mt-1">{children}</div>
         </label>
