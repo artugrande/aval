@@ -12,6 +12,7 @@ const SLIDES = [
     "usdc",
     "builder",
     "model",
+    "roadmap",
     "thanks",
 ] as const;
 
@@ -103,6 +104,9 @@ export default function DeckPage() {
                 </Slide>
                 <Slide>
                     <ModelSlide />
+                </Slide>
+                <Slide>
+                    <RoadmapSlide />
                 </Slide>
                 <Slide>
                     <ThanksSlide />
@@ -487,6 +491,52 @@ function ModelSlide() {
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    );
+}
+
+function RoadmapSlide() {
+    const items = [
+        {
+            tag: "v2 · Compliance",
+            t: "Multa programable para salir de blacklist",
+            d: "Diseñado on-chain: el borrower en default puede pagar el principal pendiente + un 50% de penalty al treasury para reinstalarse en L0 y volver a buildear historial. Mecanismo cooked, deploy queda fuera del scope v1.",
+        },
+        {
+            tag: "v2 · Liquidity",
+            t: "USDC canonical vía Avalanche ICTT",
+            d: "Reemplazo del MockUSDC: TokenSource en C-Chain locks canonical USDC, TokenDestination mints bUSDC.e en Aval L1. Teleporter ya pre-deployado en Avacloud — solo agregamos los dos contracts de ICTT.",
+        },
+        {
+            tag: "v2 · Distribución",
+            t: "Marketplace de issuers",
+            d: "Onboard a partners institucionales (Konfio MX, Creditas BR, Belvo open finance) como issuers autorizados que originan borrowers verificados con su propio scoring + comparten upside del fee.",
+        },
+        {
+            tag: "v2 · UX",
+            t: "Gasless onboarding (ERC-4337 + paymaster)",
+            d: "Hoy auto-fondeamos 0.02 AVL por wallet (relayer airdrop). v2: EntryPoint + Paymaster contract en Aval L1 — el usuario nunca toca gas, las primeras N txs las sponsoreamos transparente.",
+        },
+    ];
+    return (
+        <div>
+            <div className="deck-eyebrow">Roadmap</div>
+            <h1 className="deck-h1">
+                Qué viene después del <span className="accent">v1</span>.
+            </h1>
+            <p className="deck-lead">
+                El demo de hoy es completo end-to-end — pero hay cuatro piezas grandes que ya tenemos diseñadas y
+                quedaron fuera del scope del hackathon por tiempo o por requerir redeploy de contracts.
+            </p>
+            <div className="deck-roadmap">
+                {items.map((it) => (
+                    <div className="deck-roadmap-card" key={it.t}>
+                        <span className="tag">{it.tag}</span>
+                        <h4>{it.t}</h4>
+                        <p>{it.d}</p>
+                    </div>
+                ))}
             </div>
         </div>
     );

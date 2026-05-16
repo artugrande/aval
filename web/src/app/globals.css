@@ -1908,6 +1908,56 @@ h2.section-title .accent {
     word-break: break-word;
 }
 
+/* Roadmap slide (v2 items) */
+.deck-roadmap {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.deck-roadmap-card {
+    position: relative;
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    padding: 22px 22px 20px;
+    background: linear-gradient(180deg, rgba(239, 77, 74, 0.04), rgba(239, 77, 74, 0.01));
+    transition: border-color 0.3s, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.deck-roadmap-card:hover {
+    border-color: rgba(239, 77, 74, 0.4);
+    transform: translateY(-2px);
+}
+.deck-roadmap-card .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(239, 77, 74, 0.12);
+    border: 1px solid rgba(239, 77, 74, 0.45);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+.deck-roadmap-card h4 {
+    font-size: clamp(18px, 1.6vw, 21px);
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0 0 8px;
+    color: var(--text);
+}
+.deck-roadmap-card p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
 /* Thank you slide */
 .deck-thanks {
     text-align: center;
@@ -1956,6 +2006,10 @@ h2.section-title .accent {
     .deck-usdc {
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+    .deck-roadmap {
+        grid-template-columns: 1fr;
+        gap: 14px;
     }
     .deck-builder img {
         width: 160px;
