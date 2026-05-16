@@ -24,6 +24,7 @@ import {
     scoreAttest,
     type AttestationResponse,
     type KybStatusResponse,
+    type WavynodeAml,
 } from "@/lib/api";
 import {useBorrowerLoans} from "@/hooks/useBorrowerLoans";
 import {WrongChainNotice} from "@/components/WrongChainNotice";
@@ -97,13 +98,14 @@ export default function BorrowPage() {
 
             {(() => {
                 if (profileLoading && !profile) return <SkeletonCard />;
-                if (isOnChainApproved) return <BorrowForm wallet={address!} onError={setError} />;
+                if (isOnChainApproved) return <BorrowForm wallet={address!} wavynode={profile?.wavynode ?? null} onError={setError} />;
                 if (dbStatus === "pending_review") return <PendingNotice onRefresh={loadStatus} />;
                 if (dbStatus === "rejected") {
                     return (
                         <RejectedNotice
                             reason={profile?.aiReason ?? "Sin razón provista."}
                             attempts={profile?.attempts ?? 0}
+                            wavynode={profile?.wavynode ?? null}
                             onRetry={() => setProfile({...profile!, status: "none"})}
                         />
                     );
@@ -288,8 +290,8 @@ function KybForm({
             </Section>
 
             <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-xs text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
-                Al enviar, Claude AI evalúa tu solicitud (~10 segundos). Si aprobamos, registramos tu wallet on-chain en
-                las dos chains (Fuji + Aval L1) y podés pedir préstamos al instante.
+                Al enviar corremos un <span className="font-medium">AML scan on-chain via WavyNode</span> sobre tu wallet, Claude AI
+                evalúa el Business Profile (~10s) y si aprobamos registramos tu wallet on-chain en las dos chains (Fuji + Aval L1).
             </div>
 
             <button
@@ -297,7 +299,7 @@ function KybForm({
                 disabled={submitting || !requiredFilled}
                 className="w-full rounded-lg bg-foreground px-5 py-3 font-medium text-background disabled:opacity-40"
             >
-                {submitting ? "Revisando con AI + registrando on-chain…" : "Enviar Business Profile"}
+                {submitting ? "Escaneando AML on-chain + revisando con AI + registrando…" : "Enviar Business Profile"}
             </button>
         </form>
     );
@@ -308,8 +310,8 @@ function PendingNotice({onRefresh}: {onRefresh: () => void}) {
         <div className="mt-8 rounded-xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-950">
             <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-100">🤔 Revisando tu solicitud</h2>
             <p className="mt-2 text-sm text-blue-800 dark:text-blue-200">
-                Claude AI está analizando tu Business Profile. Normalmente esto se resuelve en segundos —
-                si llegaste a esta pantalla, recargá en un momento.
+                WavyNode está corriendo el escaneo AML on-chain y Claude AI está evaluando tu Business Profile.
+                Normalmente esto se resuelve en segundos — si llegaste a esta pantalla, recargá en un momento.
             </p>
             <button
                 onClick={onRefresh}
@@ -321,18 +323,88 @@ function PendingNotice({onRefresh}: {onRefresh: () => void}) {
     );
 }
 
-function RejectedNotice({reason, attempts, onRetry}: {reason: string; attempts: number; onRetry: () => void}) {
+function RejectedNotice({reason, attempts, wavynode, onRetry}: {reason: string; attempts: number; wavynode: WavynodeAml | null; onRetry: () => void}) {
     return (
-        <div className="mt-8 rounded-xl border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950">
-            <h2 className="text-lg font-semibold text-red-900 dark:text-red-100">❌ Solicitud rechazada</h2>
-            <p className="mt-2 text-sm text-red-800 dark:text-red-200">{reason}</p>
-            <p className="mt-3 text-xs text-red-700 dark:text-red-300">Intentos: {attempts}</p>
-            <button
-                onClick={onRetry}
-                className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-            >
-                Volver a enviar con datos corregidos
-            </button>
+        <div className="mt-8 space-y-3">
+            {wavynode && <AmlBadge wavynode={wavynode} />}
+            <div className="rounded-xl border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950">
+                <h2 className="text-lg font-semibold text-red-900 dark:text-red-100">❌ Solicitud rechazada</h2>
+                <p className="mt-2 text-sm text-red-800 dark:text-red-200">{reason}</p>
+                <p className="mt-3 text-xs text-red-700 dark:text-red-300">Intentos: {attempts}</p>
+                <button
+                    onClick={onRetry}
+                    className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                >
+                    Volver a enviar con datos corregidos
+                </button>
+            </div>
+        </div>
+    );
+}
+
+/// Reusable AML pill that summarizes the latest WavyNode scan for the borrower.
+/// Three states: pending (no score yet), clean (green), flagged (red).
+function AmlBadge({wavynode}: {wavynode: WavynodeAml | null}) {
+    if (!wavynode) return null;
+    const score = wavynode.riskScore;
+    const flagged = wavynode.suspicious === true || (score != null && score >= 60) || wavynode.riskLevel === "high" || wavynode.riskLevel === "critical";
+
+    if (score == null && !wavynode.scannedAt) {
+        return (
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-500" />
+                        <span className="font-medium">🔍 AML scan en curso · WavyNode</span>
+                    </div>
+                    <span className="text-xs text-zinc-500">Análisis on-chain</span>
+                </div>
+                <p className="mt-1 text-xs text-zinc-500">
+                    Tu wallet ya está registrada para monitoreo continuo. El score aparece acá apenas WavyNode termine el análisis.
+                </p>
+            </div>
+        );
+    }
+
+    if (flagged) {
+        return (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm dark:border-red-800 dark:bg-red-950">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-red-900 dark:text-red-100">
+                        <span>⚠</span>
+                        <span className="font-medium">Wallet flaggeada · WavyNode</span>
+                    </div>
+                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-900 dark:bg-red-900/40 dark:text-red-100">
+                        Score {score ?? "—"}/100{wavynode.riskLevel ? ` · ${wavynode.riskLevel}` : ""}
+                    </span>
+                </div>
+                {wavynode.riskReason && (
+                    <p className="mt-1 text-xs text-red-800 dark:text-red-200">{wavynode.riskReason}</p>
+                )}
+            </div>
+        );
+    }
+
+    return (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm dark:border-emerald-800 dark:bg-emerald-950">
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-100">
+                    <span>✓</span>
+                    <span className="font-medium">AML verificado · WavyNode</span>
+                </div>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-100">
+                    Score {score}/100{wavynode.riskLevel ? ` · ${wavynode.riskLevel}` : ""}
+                </span>
+            </div>
+            <p className="mt-1 text-xs text-emerald-800 dark:text-emerald-200">
+                {wavynode.txAnalyzed != null && wavynode.txAnalyzed > 0
+                    ? `${wavynode.txAnalyzed.toLocaleString("en-US")} transacciones analizadas on-chain`
+                    : "Sin patrones de riesgo detectados"}
+                {wavynode.patternsDetected != null && wavynode.patternsDetected > 0
+                    ? ` · ${wavynode.patternsDetected} patrón${wavynode.patternsDetected === 1 ? "" : "es"} de bajo riesgo`
+                    : ""}
+                . Wallet bajo monitoreo continuo.
+            </p>
         </div>
     );
 }
@@ -388,7 +460,7 @@ function ErrorBanner({message, onClose}: {message: string; onClose: () => void})
 
 // ───── Borrow form (after on-chain approval) ─────
 
-function BorrowForm({wallet, onError}: {wallet: Address; onError: (e: string) => void}) {
+function BorrowForm({wallet, wavynode, onError}: {wallet: Address; wavynode: WavynodeAml | null; onError: (e: string) => void}) {
     const chainId = useChainId();
     const contracts = getContracts(chainId);
     const [amount, setAmount] = useState("");
@@ -499,6 +571,7 @@ function BorrowForm({wallet, onError}: {wallet: Address; onError: (e: string) =>
 
     return (
         <div className="mt-8 space-y-4">
+            <AmlBadge wavynode={wavynode} />
             <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
                 <div className="flex items-start justify-between">
                     <div>

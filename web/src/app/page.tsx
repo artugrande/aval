@@ -715,6 +715,39 @@ export default function Home() {
                                 Ver stats →
                             </Link>
                         </div>
+
+                        <div
+                            className="promo-card reveal"
+                            data-tilt
+                            style={{transitionDelay: ".16s"}}
+                        >
+                            <div className="glow a" style={{background: "#3b82f6"}} />
+                            <div className="glow b" style={{background: "#06b6d4", opacity: 0.18}} />
+                            <div className="partner">
+                                <div className="partner-logo" style={{background: "#0a0a0a"}}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src="/wavynode-dark.svg" alt="WavyNode" />
+                                </div>
+                                <div className="partner-name">WavyNode</div>
+                            </div>
+                            <h3>
+                                <span className="accent">AML on-chain</span> + reportes regulatorios LatAm
+                            </h3>
+                            <p>
+                                Cada wallet que pide crédito pasa por un escaneo AML on-chain de WavyNode antes de
+                                que Claude la apruebe. Y para los lenders generamos los reportes mensuales que pide
+                                cada regulador (México, Colombia, El Salvador, Guatemala). Compliance enterprise sin
+                                las semanas de consultoría.
+                            </p>
+                            <a
+                                className="promo-link"
+                                href="https://wavynode.com"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                wavynode.com →
+                            </a>
+                        </div>
                     </div>
 
                     <div className="promo-foot">

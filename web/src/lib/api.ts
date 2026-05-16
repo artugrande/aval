@@ -19,12 +19,31 @@ export interface KybReviewInput {
     repLinkedin?: string;
 }
 
+export type WavyRiskLevel = "minimal" | "low" | "medium" | "high" | "critical";
+
+export interface WavynodeAml {
+    /** 0–100 risk score from WavyNode's analysis (null = analysis still running). */
+    riskScore: number | null;
+    riskLevel: WavyRiskLevel | null;
+    riskReason: string | null;
+    /** True if WavyNode explicitly flagged suspicious activity. */
+    suspicious: boolean | null;
+    patternsDetected: number | null;
+    txAnalyzed: number | null;
+    analysisId: string | null;
+    /** ISO timestamp when scan-risk last returned results. */
+    scannedAt: string | null;
+    /** ISO timestamp when the wallet was registered for ongoing monitoring. */
+    registeredAt: string | null;
+}
+
 export interface KybReviewResponse {
     decision: "approve" | "reject";
     reason: string;
     status: "approved" | "rejected";
     attempts: number;
     onchainTxHashes: {fuji: string | null; l1: string | null};
+    wavynode: WavynodeAml | null;
 }
 
 export interface KybStatusResponse {
@@ -34,6 +53,7 @@ export interface KybStatusResponse {
     businessName: string | null;
     onchainTxHash: string | null;
     onchainChainId: number | null;
+    wavynode: WavynodeAml | null;
 }
 
 export interface BootstrapState {

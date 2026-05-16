@@ -8,6 +8,7 @@ const SLIDES = [
     "problema",
     "solucion",
     "como-funciona",
+    "compliance",
     "builder",
     "model",
     "thanks",
@@ -89,6 +90,9 @@ export default function DeckPage() {
                 </Slide>
                 <Slide>
                     <HowSlide />
+                </Slide>
+                <Slide>
+                    <ComplianceSlide />
                 </Slide>
                 <Slide>
                     <BuilderSlide />
@@ -218,8 +222,8 @@ function SolutionSlide() {
             d: "Las PyMEs piden USDC con su wallet, sin garantías ni avales tradicionales.",
         },
         {
-            t: "Verificación con IA",
-            d: "Claude Haiku 4.5 revisa el Business Profile en menos de 15 segundos.",
+            t: "Verificación con IA + AML on-chain",
+            d: "Claude Haiku 4.5 revisa el Business Profile y WavyNode escanea la wallet en cadena, todo en <15s.",
         },
         {
             t: "Caps que crecen pagando",
@@ -273,6 +277,50 @@ function HowSlide() {
                         <div className="rate">{lv.rate}</div>
                     </div>
                 ))}
+            </div>
+        </div>
+    );
+}
+
+function ComplianceSlide() {
+    const stack = [
+        {
+            t: "AML on-chain",
+            d: "Cada wallet pasa por scan-risk de WavyNode antes de que Claude apruebe. Score ≥ 60 o suspicious activity → reject automático.",
+            icon: "🔍",
+        },
+        {
+            t: "Monitoreo continuo",
+            d: "Las wallets aprobadas quedan registradas para alertas en tiempo real sobre interacciones con direcciones flaggeadas.",
+            icon: "📡",
+        },
+        {
+            t: "Reportes regulatorios",
+            d: "Reportes PDF mensuales para 🇲🇽 CNBV, 🇨🇴 SFC, 🇸🇻 CNAD, 🇬🇹 SIB — descargables desde /lend.",
+            icon: "📄",
+        },
+    ];
+    return (
+        <div>
+            <div className="deck-eyebrow">Compliance stack</div>
+            <h1 className="deck-h1">
+                Compliance enterprise sin <span className="accent">las semanas de consultoría</span>.
+            </h1>
+            <p className="deck-lead">
+                Integramos <strong style={{color: "var(--text)"}}>WavyNode</strong> — el rail de compliance regulatorio para
+                payment providers crypto en LatAm — para cubrir AML, monitoreo y reportes en una sola pieza.
+            </p>
+            <div className="deck-compliance">
+                {stack.map((s) => (
+                    <div className="deck-comp-card" key={s.t}>
+                        <div className="ico">{s.icon}</div>
+                        <h4>{s.t}</h4>
+                        <p>{s.d}</p>
+                    </div>
+                ))}
+            </div>
+            <div className="deck-comp-foot">
+                Powered by <a href="https://wavynode.com" target="_blank" rel="noreferrer">wavynode.com</a>
             </div>
         </div>
     );

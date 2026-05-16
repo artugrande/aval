@@ -30,12 +30,67 @@ export default function StatsPage() {
                 Subnet-EVM corriendo en Avacloud — misma API de contratos, gas pagado en `AVL`.
             </p>
 
+            <ComplianceStack />
+
             <div className="mt-10 grid gap-6 lg:grid-cols-2">
                 {CHAINS.map((chain) => (
                     <ChainCard key={chain.chainId} chain={chain} />
                 ))}
             </div>
         </main>
+    );
+}
+
+function ComplianceStack() {
+    return (
+        <section className="mt-8 rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50 p-6 dark:border-blue-900/60 dark:from-blue-950/40 dark:to-cyan-950/40">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/wavynode-dark.svg" alt="WavyNode" className="h-7 w-7" />
+                    <div>
+                        <div className="text-xs uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                            Compliance stack
+                        </div>
+                        <h2 className="text-lg font-semibold text-blue-950 dark:text-blue-100">
+                            Powered by WavyNode
+                        </h2>
+                    </div>
+                </div>
+                <a
+                    href="https://wavynode.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-blue-700 underline hover:text-blue-900 dark:text-blue-200"
+                >
+                    wavynode.com ↗
+                </a>
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <ComplianceCell
+                    title="AML on-chain"
+                    body="Cada wallet pasa por scan-risk de WavyNode antes de que Claude la apruebe. Score < 60 = OK; ≥ 60 o suspicious activity = reject automático."
+                />
+                <ComplianceCell
+                    title="Monitoreo continuo"
+                    body="Las wallets aprobadas quedan registradas en WavyNode para alertas en tiempo real sobre interacciones con direcciones flaggeadas."
+                />
+                <ComplianceCell
+                    title="Reportes regulatorios"
+                    body="Reportes mensuales PDF en /lend para 🇲🇽 CNBV, 🇨🇴 SFC, 🇸🇻 CNAD y 🇬🇹 SIB. Auto-generados desde la actividad on-chain del pool."
+                />
+            </div>
+        </section>
+    );
+}
+
+function ComplianceCell({title, body}: {title: string; body: string}) {
+    return (
+        <div className="rounded-lg border border-blue-200/60 bg-white/60 p-4 backdrop-blur dark:border-blue-900/60 dark:bg-zinc-950/40">
+            <div className="text-sm font-semibold text-blue-950 dark:text-blue-100">{title}</div>
+            <p className="mt-1 text-xs text-blue-900/80 dark:text-blue-200/80">{body}</p>
+        </div>
     );
 }
 
