@@ -1,0 +1,15 @@
+{
+  "name": "aval",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Uncollateralized SME credit on Avalanche — Hackathon LatAm Institucional 2026",
+  "packageManager": "pnpm@10.18.2",
+  "scripts": {
+    "web:dev": "pnpm --filter web dev",
+    "web:build": "pnpm --filter web build",
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test -vvv",
+    "supabase:start": "cd supabase && supabase start",
+    "supabase:stop": "cd supabase && supabase stop"
+  }
+}
