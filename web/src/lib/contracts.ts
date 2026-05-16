@@ -6,7 +6,12 @@ import {avalL1} from "./wagmi-chains";
 // Deployed addresses come from `forge script ... --broadcast` on each chain.
 // Zero address = "not deployed on this chain yet"; components render an empty state.
 const ZERO = "0x0000000000000000000000000000000000000000" as Address;
-const envAddr = (k: string): Address => (process.env[k] as Address | undefined) ?? ZERO;
+
+// IMPORTANT: each `process.env.NEXT_PUBLIC_X` must be a STATIC literal reference.
+// Next.js (Turbopack/Webpack) only inlines NEXT_PUBLIC_* env vars at build time
+// when accessed via direct property syntax. Dynamic access (`process.env[key]`)
+// returns undefined in the browser bundle and silently fails.
+const fallback = (v: string | undefined): Address => (v as Address | undefined) ?? ZERO;
 
 export interface ChainContracts {
     issuerRegistry: Address;
@@ -20,16 +25,16 @@ export interface ChainContracts {
 // and `getContracts(chainId)`.
 const REGISTRY: Record<number, ChainContracts> = {
     [avalancheFuji.id]: {
-        issuerRegistry: envAddr("NEXT_PUBLIC_ISSUER_REGISTRY_ADDRESS"),
-        lendingPool: envAddr("NEXT_PUBLIC_LENDING_POOL_ADDRESS"),
-        creditManager: envAddr("NEXT_PUBLIC_CREDIT_MANAGER_ADDRESS"),
-        usdc: envAddr("NEXT_PUBLIC_USDC_ADDRESS"),
+        issuerRegistry: fallback(process.env.NEXT_PUBLIC_ISSUER_REGISTRY_ADDRESS),
+        lendingPool: fallback(process.env.NEXT_PUBLIC_LENDING_POOL_ADDRESS),
+        creditManager: fallback(process.env.NEXT_PUBLIC_CREDIT_MANAGER_ADDRESS),
+        usdc: fallback(process.env.NEXT_PUBLIC_USDC_ADDRESS),
     },
     [avalL1.id]: {
-        issuerRegistry: envAddr("NEXT_PUBLIC_L1_ISSUER_REGISTRY_ADDRESS"),
-        lendingPool: envAddr("NEXT_PUBLIC_L1_LENDING_POOL_ADDRESS"),
-        creditManager: envAddr("NEXT_PUBLIC_L1_CREDIT_MANAGER_ADDRESS"),
-        usdc: envAddr("NEXT_PUBLIC_L1_USDC_ADDRESS"),
+        issuerRegistry: fallback(process.env.NEXT_PUBLIC_L1_ISSUER_REGISTRY_ADDRESS),
+        lendingPool: fallback(process.env.NEXT_PUBLIC_L1_LENDING_POOL_ADDRESS),
+        creditManager: fallback(process.env.NEXT_PUBLIC_L1_CREDIT_MANAGER_ADDRESS),
+        usdc: fallback(process.env.NEXT_PUBLIC_L1_USDC_ADDRESS),
     },
 };
 
