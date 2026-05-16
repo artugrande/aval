@@ -3,10 +3,9 @@
 // WavyNode is the compliance layer of Aval:
 //   1. AML scan on borrower wallets during KYB (sync sanity + async deep scan)
 //   2. Address registration → ongoing monitoring + alerts
-//   3. Regulatory PDF reports per country / period (MX, CO, SV, GT)
 //
-// All three live in this file as plain `fetch` calls. The API key + projectId
-// are server-only env vars; never import this from a client component.
+// Both live in this file as plain `fetch` calls. The API key + projectId are
+// server-only env vars; never import this from a client component.
 //
 // Docs: https://docs.wavynode.com/api-reference/openapi.json
 
@@ -39,21 +38,6 @@ export interface WavyScanRiskResponse {
     missing: number;
     results: WavyScanRiskResult[];
     missingAddresses?: string[];
-}
-
-export interface WavyReport {
-    id: string;
-    name?: string;
-    period: string;
-    countryCode: string;
-    createdAt?: string;
-    [key: string]: unknown;
-}
-
-export interface WavyReportDownload {
-    filename: string;
-    url: string; // signed download URL
-    period?: string;
 }
 
 function env(): {apiKey: string; projectId: string} | null {
@@ -138,43 +122,6 @@ export async function wavynodeRegisterAddress(
         // 409-ish "already registered" is fine — we treat it as success.
         if (e instanceof Error && /already|exists|duplicate/i.test(e.message)) return true;
         return false;
-    }
-}
-
-/// List compliance reports for a given country + period (YYYY-MM).
-export async function wavynodeListReports(
-    countryCode: "MX" | "CO" | "SV" | "GT",
-    period: string,
-    timeoutMs = 10_000,
-): Promise<WavyReport[]> {
-    const cfg = env();
-    if (!cfg) return [];
-    try {
-        const qs = new URLSearchParams({
-            projectId: cfg.projectId,
-            period,
-            countryCode,
-        }).toString();
-        const data = await call<WavyReport[] | {reports?: WavyReport[]}>(`/reports?${qs}`, {
-            method: "GET",
-            timeoutMs,
-        });
-        if (Array.isArray(data)) return data;
-        return data.reports ?? [];
-    } catch {
-        return [];
-    }
-}
-
-/// Get a signed download URL for a specific report.
-export async function wavynodeGetReportDownload(reportId: string, timeoutMs = 10_000): Promise<WavyReportDownload | null> {
-    const cfg = env();
-    if (!cfg) return null;
-    try {
-        const data = await call<WavyReportDownload>(`/reports/${reportId}`, {method: "GET", timeoutMs});
-        return data;
-    } catch {
-        return null;
     }
 }
 

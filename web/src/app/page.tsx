@@ -203,7 +203,7 @@ export default function Home() {
                             <img src="/avax.svg" alt="Avalanche" />
                             <span>Avalanche</span>
                         </a>
-                        <a className="hero-stack-pill" href="https://wavynode.com" target="_blank" rel="noreferrer" title="WavyNode — AML on-chain y reportes regulatorios LatAm">
+                        <a className="hero-stack-pill" href="https://wavynode.com" target="_blank" rel="noreferrer" title="WavyNode — AML on-chain y monitoreo continuo de wallets">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src="/wavynode-dark.svg" alt="WavyNode" />
                             <span>WavyNode</span>
@@ -673,13 +673,13 @@ export default function Home() {
                                 <div className="partner-name">WavyNode</div>
                             </div>
                             <h3>
-                                <span className="accent">AML on-chain</span> + reportes regulatorios LatAm
+                                <span className="accent">AML on-chain</span> + monitoreo continuo
                             </h3>
                             <p>
                                 Cada wallet que pide crédito pasa por un escaneo AML on-chain de WavyNode antes de
-                                que Claude la apruebe. Y para los lenders generamos los reportes mensuales que pide
-                                cada regulador (México, Colombia, El Salvador, Guatemala). Compliance enterprise sin
-                                las semanas de consultoría.
+                                que Claude la apruebe. Las wallets aprobadas quedan registradas para alertas en
+                                tiempo real sobre interacciones con direcciones flaggeadas — compliance enterprise
+                                sin las semanas de consultoría.
                             </p>
                             <a
                                 className="promo-link"

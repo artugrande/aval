@@ -314,11 +314,6 @@ function ComplianceSlide() {
             d: "Las wallets aprobadas quedan registradas para alertas en tiempo real sobre interacciones con direcciones flaggeadas.",
             icon: "📡",
         },
-        {
-            t: "Reportes regulatorios",
-            d: "Reportes PDF mensuales para 🇲🇽 CNBV, 🇨🇴 SFC, 🇸🇻 CNAD, 🇬🇹 SIB — descargables desde /lend.",
-            icon: "📄",
-        },
     ];
     return (
         <div>
@@ -328,9 +323,9 @@ function ComplianceSlide() {
             </h1>
             <p className="deck-lead">
                 Integramos <strong style={{color: "var(--text)"}}>WavyNode</strong> — el rail de compliance regulatorio para
-                payment providers crypto en LatAm — para cubrir AML, monitoreo y reportes en una sola pieza.
+                payment providers crypto en LatAm — para cubrir AML on-chain y monitoreo continuo de las wallets aprobadas.
             </p>
-            <div className="deck-compliance">
+            <div className="deck-compliance two">
                 {stack.map((s) => (
                     <div className="deck-comp-card" key={s.t}>
                         <div className="ico">{s.icon}</div>
@@ -338,9 +333,6 @@ function ComplianceSlide() {
                         <p>{s.d}</p>
                     </div>
                 ))}
-            </div>
-            <div className="deck-comp-foot">
-                Powered by <a href="https://wavynode.com" target="_blank" rel="noreferrer">wavynode.com</a>
             </div>
         </div>
     );

@@ -67,7 +67,7 @@ function ComplianceStack() {
                 </a>
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <ComplianceCell
                     title="AML on-chain"
                     body="Cada wallet pasa por scan-risk de WavyNode antes de que Claude la apruebe. Score < 60 = OK; ≥ 60 o suspicious activity = reject automático."
@@ -75,10 +75,6 @@ function ComplianceStack() {
                 <ComplianceCell
                     title="Monitoreo continuo"
                     body="Las wallets aprobadas quedan registradas en WavyNode para alertas en tiempo real sobre interacciones con direcciones flaggeadas."
-                />
-                <ComplianceCell
-                    title="Reportes regulatorios"
-                    body="Reportes mensuales PDF en /lend para 🇲🇽 CNBV, 🇨🇴 SFC, 🇸🇻 CNAD y 🇬🇹 SIB. Auto-generados desde la actividad on-chain del pool."
                 />
             </div>
         </section>
