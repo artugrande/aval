@@ -11,11 +11,11 @@ export default function Home() {
             {/* ───── Hero ───── */}
             <section className="mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
                 <h1 className="text-5xl font-semibold leading-tight tracking-tight sm:text-6xl">
-                    Crédito sin colateral para PyMEs LatAm.
+                    Crédito global para PyMEs de LatAm.
                 </h1>
                 <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-                    Aval conecta liquidez global en USDC con PyMEs verificadas. Sin garantía, con attestations
-                    firmadas on-chain. Construido sobre Avalanche, con nuestra propia L1.
+                    Accedé a financiamiento en dólares digitales de forma rápida, transparente y sin depender de
+                    bancos tradicionales.
                 </p>
                 <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
                     <Link
@@ -98,7 +98,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ───── Lo que ganás con Aval ───── */}
+            {/* ───── Por qué Aval es distinto ───── */}
             <section className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
                 <div className="mx-auto max-w-6xl px-6 py-20">
                     <div className="max-w-3xl">
@@ -106,42 +106,119 @@ export default function Home() {
                             Por qué Aval es distinto
                         </span>
                         <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                            Pensado para tu PyME, no para el sistema.
+                            Pensado para PyMEs de LatAm, no para bancos tradicionales.
                         </h2>
                         <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-                            Construimos nuestra propia red dedicada en Avalanche para no depender de bancos lentos ni
-                            de aplicaciones caóticas. Vos solo ves los beneficios:
+                            Construimos nuestra propia infraestructura financiera sobre Avalanche para ofrecer una
+                            experiencia más rápida, transparente y predecible desde el día uno.
                         </p>
                     </div>
 
                     <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <Advantage
-                            title="Todo en dólares"
-                            body="Pedís dólares (USDC), repagás dólares, las comisiones también. No necesitás comprar criptomonedas raras ni cambiar a una moneda que no entendés."
+                            icon="💵"
+                            title="Todo en dólares digitales"
+                            body={
+                                <>
+                                    <p>Operás en USDC de punta a punta: préstamos, repagos y comisiones.</p>
+                                    <p className="mt-2">Simple, transparente y estable desde el primer día.</p>
+                                </>
+                            }
                         />
                         <Advantage
-                            title="Tarifas claras desde el día 1"
-                            body="Antes de pedir el préstamo ves exactamente cuánto vas a pagar. Sin letra chica, sin comisiones que aparecen después, sin tasas variables."
+                            icon="📊"
+                            title="Costos transparentes"
+                            body={
+                                <>
+                                    <p>Antes de aceptar un préstamo ves exactamente:</p>
+                                    <ul className="mt-2 ml-4 list-disc space-y-0.5">
+                                        <li>cuánto recibís,</li>
+                                        <li>cuánto devolvés,</li>
+                                        <li>y cuándo.</li>
+                                    </ul>
+                                    <p className="mt-2">Sin letra chica. Sin cargos sorpresa. Sin tasas que cambian después.</p>
+                                </>
+                            }
                         />
                         <Advantage
-                            title="Auditable como un banco"
-                            body="Cada préstamo y cada repago queda registrado en un libro público que cualquiera puede verificar — vos, un auditor, el SAT/AFIP. Misma transparencia que un banco regulado."
+                            icon="⚡"
+                            title="Operaciones en segundos"
+                            body={
+                                <>
+                                    <p>No dependemos de horarios bancarios ni procesos manuales.</p>
+                                    <p className="mt-2">Las operaciones se procesan en segundos, 24/7.</p>
+                                </>
+                            }
                         />
                         <Advantage
-                            title="Tu reputación crece y te pertenece"
-                            body="Cada préstamo repagado a tiempo aumenta tu límite. Esa historia es tuya — podés mostrarla a otros lenders en el futuro, no estás atado solo a Aval."
+                            icon="🔍"
+                            title="Transparencia verificable"
+                            body={
+                                <>
+                                    <p>
+                                        Cada préstamo y cada repago quedan registrados en una infraestructura pública y
+                                        auditable.
+                                    </p>
+                                    <p className="mt-2">
+                                        Vos, un auditor o incluso tu contador pueden verificar toda la actividad en
+                                        tiempo real.
+                                    </p>
+                                </>
+                            }
                         />
                         <Advantage
-                            title="Rápido, sin papeles"
-                            body="Cada operación tarda segundos, no días. No hay '3 días hábiles', no hay 'mandanos los papeles por mail'. Conectás tu wallet y operás."
+                            icon="📈"
+                            title="Tu reputación financiera te pertenece"
+                            body={
+                                <>
+                                    <p>Cada préstamo repagado construye historial y aumenta tu acceso a capital.</p>
+                                    <p className="mt-2">
+                                        Tu reputación no queda encerrada en un solo banco o institución.
+                                    </p>
+                                </>
+                            }
                         />
                         <Advantage
+                            icon="🌎"
                             title="Diseñado para LatAm"
-                            body="Pensado desde el día uno para PyMEs de México, Argentina, Colombia, Perú y el resto de la región. No es un producto gringo traducido al español."
+                            body={
+                                <>
+                                    <p>Construido desde el día uno para empresas de:</p>
+                                    <ul className="mt-2 ml-4 list-disc space-y-0.5">
+                                        <li>🇲🇽 México</li>
+                                        <li>🇦🇷 Argentina</li>
+                                        <li>🇨🇴 Colombia</li>
+                                        <li>🇵🇪 Perú</li>
+                                        <li>y el resto de la región.</li>
+                                    </ul>
+                                </>
+                            }
                         />
                     </div>
 
-                    <p className="mt-10 text-center text-xs text-zinc-500">
+                    {/* L1 mention */}
+                    <div className="mt-12 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
+                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 className="text-base font-semibold">
+                                    🏔️ Construido sobre <span className="text-red-600 dark:text-red-400">Aval L1</span>, nuestra propia blockchain
+                                </h3>
+                                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                    Una red dedicada en Avalanche que controlamos enteramente — gas pagado en USDC,
+                                    validadores institucionales y throughput exclusivo para crédito. Eso es lo que
+                                    hace que todo lo de arriba sea posible.
+                                </p>
+                            </div>
+                            <Link
+                                href="/stats"
+                                className="shrink-0 rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-white dark:border-zinc-700 dark:hover:bg-black"
+                            >
+                                Ver stats →
+                            </Link>
+                        </div>
+                    </div>
+
+                    <p className="mt-8 text-center text-xs text-zinc-500">
                         ¿Sos developer y querés ver el código?{" "}
                         <a
                             href="https://github.com/artugrande/aval"
@@ -232,11 +309,12 @@ function LevelCard({level, cap, fee, color}: {level: number; cap: number; fee: s
     );
 }
 
-function Advantage({title, body}: {title: string; body: string}) {
+function Advantage({icon, title, body}: {icon?: string; title: string; body: React.ReactNode}) {
     return (
         <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            <h3 className="text-base font-semibold">{title}</h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{body}</p>
+            {icon && <div className="text-2xl">{icon}</div>}
+            <h3 className={`text-base font-semibold ${icon ? "mt-2" : ""}`}>{title}</h3>
+            <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{body}</div>
         </div>
     );
 }
