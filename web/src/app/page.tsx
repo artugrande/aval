@@ -4,6 +4,7 @@ import Link from "next/link";
 import {useEffect, useRef} from "react";
 
 import {HeroShader} from "@/components/HeroShader";
+import {PoolMetrics} from "@/components/PoolMetrics";
 
 interface Level {
     l: string;
@@ -440,6 +441,8 @@ export default function Home() {
                         </p>
                     </div>
 
+                    <PoolMetrics />
+
                     <div className="features-grid">
                         <FeatureCard
                             iconSvg={
@@ -567,11 +570,9 @@ export default function Home() {
                     </div>
 
                     <p className="levels-foot" style={{textAlign: "center", marginLeft: "auto", marginRight: "auto"}}>
-                        <strong style={{color: "var(--text)"}}>Te lo decimos derecho:</strong> si un borrower no paga, esa
-                        pérdida se reparte entre todos los lenders del pool. Estamos trabajando en una capa extra que va
-                        a absorber esas pérdidas antes de tocar tu plata. No te prometemos un rendimiento fijo —
-                        preferimos que veas con tus propios ojos cuánto rinde el pool y cuántos préstamos no se pagaron
-                        en{" "}
+                        <strong style={{color: "var(--text)"}}>Riesgo real:</strong> si un borrower no paga, esa pérdida se
+                        reparte entre todos los lenders del pool. No te prometemos un rendimiento fijo. Podés ver en
+                        tiempo real cuánto rinde el pool y cuántos préstamos no se pagaron en{" "}
                         <Link href="/stats" style={{color: "var(--accent)", textDecoration: "underline"}}>
                             /stats
                         </Link>

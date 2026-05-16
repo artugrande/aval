@@ -920,6 +920,59 @@ h2.section-title .accent {
     }
 }
 
+/* ===== Pool metrics (lender section) ===== */
+.pool-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 64px 0 40px;
+    padding: 36px 32px 28px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005));
+    position: relative;
+}
+.pool-metric {
+    text-align: center;
+}
+.pool-metric-v {
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.pool-metric-v.accent {
+    color: var(--accent);
+}
+.pool-metric-l {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 12px;
+}
+.pool-metric-foot {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+    text-align: center;
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+}
+@media (max-width: 760px) {
+    .pool-metrics {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    .pool-metric-v {
+        font-size: 32px;
+    }
+}
+
 /* ===== Inputs (existing) ===== */
 .input {
     width: 100%;
