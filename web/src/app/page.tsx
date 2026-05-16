@@ -7,14 +7,15 @@ export default function Home() {
     const {isConnected} = useAccount();
 
     return (
-        <div className="flex flex-col bg-zinc-50 font-sans dark:bg-black">
-            <section className="mx-auto max-w-4xl px-6 py-20 text-center">
+        <div className="bg-zinc-50 font-sans dark:bg-black">
+            {/* ───── Hero ───── */}
+            <section className="mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
                 <h1 className="text-5xl font-semibold leading-tight tracking-tight sm:text-6xl">
                     Crédito sin colateral para PyMEs LatAm.
                 </h1>
                 <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-                    Aval conecta liquidez global en USDC con PyMEs verificadas por issuers locales. Sin garantía, con
-                    attestations firmadas on-chain. Construido sobre Avalanche.
+                    Aval conecta liquidez global en USDC con PyMEs verificadas. Sin garantía, con attestations
+                    firmadas on-chain. Construido sobre Avalanche, con nuestra propia L1.
                 </p>
                 <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
                     <Link
@@ -31,32 +32,199 @@ export default function Home() {
                     </Link>
                 </div>
                 {!isConnected && (
-                    <p className="mt-4 text-sm text-zinc-500">Conectá tu wallet (Fuji testnet) para empezar.</p>
+                    <p className="mt-4 text-sm text-zinc-500">Conectá tu wallet para empezar.</p>
                 )}
             </section>
 
-            <section className="mx-auto max-w-6xl px-6 pb-24">
-                <div className="grid gap-6 sm:grid-cols-3">
-                    <Card
-                        title="Para lenders"
-                        body="Depositá USDC en un pool ERC-4626. Recibí shares (avUSDC) que rinden por las fees cobradas a borrowers."
-                        href="/lend"
-                        cta="Ir a Lend"
-                    />
-                    <Card
-                        title="Para PyMEs"
-                        body="Onboarding KYB en minutos. Recibí una línea de crédito firmada por un issuer local. Tomá préstamos a término en USDC."
-                        href="/borrow"
-                        cta="Ir a Borrow"
-                    />
-                    <Card
-                        title="Stats del protocolo"
-                        body="TVL, préstamos activos, defaults realizados. Todo verificable on-chain en Snowtrace."
-                        href="/stats"
-                        cta="Ver stats"
-                    />
+            {/* ───── El problema ───── */}
+            <section className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+                <div className="mx-auto max-w-6xl px-6 py-20">
+                    <div className="max-w-3xl">
+                        <span className="text-xs font-semibold uppercase tracking-widest text-red-600 dark:text-red-400">
+                            El problema
+                        </span>
+                        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+                            LatAm tiene una brecha de financiamiento PyME de más de{" "}
+                            <span className="text-red-600 dark:text-red-400">US$100B</span>.
+                        </h2>
+                        <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
+                            Las PyMEs representan <strong>casi el 99% de las empresas</strong> de la región y generan{" "}
+                            <strong>más del 60% del empleo formal</strong> — pero millones siguen sin acceso a crédito
+                            adecuado.
+                        </p>
+                    </div>
+
+                    <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <CountryStat flag="🇲🇽" country="México" pct="85%" />
+                        <CountryStat flag="🇦🇷" country="Argentina" pct="78%" />
+                        <CountryStat flag="🇨🇴" country="Colombia" pct="76%" />
+                        <CountryStat flag="🇵🇪" country="Perú" pct="45%" />
+                    </div>
+                    <p className="mt-4 text-sm text-zinc-500">
+                        Porcentaje de negocios que enfrentan dificultades para acceder a financiamiento o crédito
+                        formal.
+                    </p>
                 </div>
             </section>
+
+            {/* ───── Cómo funciona ───── */}
+            <section className="border-t border-zinc-200 dark:border-zinc-800">
+                <div className="mx-auto max-w-6xl px-6 py-20">
+                    <div className="max-w-3xl">
+                        <span className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                            Cómo funciona Aval
+                        </span>
+                        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+                            Tu cap arranca chico y crece pagando.
+                        </h2>
+                        <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
+                            Sin extractos bancarios, sin facturas, sin scoring opaco. Cada PyME arranca en{" "}
+                            <strong>L1 con un cap de $100 USDC</strong>. Cada préstamo repagado a tiempo te sube de
+                            nivel, hasta $20,000 en L11. La tasa baja a medida que tu nivel sube — menos riesgo, mejor
+                            precio.
+                        </p>
+                    </div>
+
+                    <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {LEVELS.map((l) => (
+                            <LevelCard key={l.level} {...l} />
+                        ))}
+                    </div>
+
+                    <p className="mt-6 text-sm text-zinc-500">
+                        Default → L0 + blacklist. La economía hace el resto: el costo de crear wallet + KYB + perder
+                        $100 supera lo que un atacante puede sacar al inicio. La confianza se gana préstamo a préstamo.
+                    </p>
+                </div>
+            </section>
+
+            {/* ───── Ventajas de la L1 ───── */}
+            <section className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+                <div className="mx-auto max-w-6xl px-6 py-20">
+                    <div className="max-w-3xl">
+                        <span className="text-xs font-semibold uppercase tracking-widest text-red-600 dark:text-red-400">
+                            Por qué nuestra propia Avalanche L1
+                        </span>
+                        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+                            Infraestructura diseñada para crédito institucional.
+                        </h2>
+                        <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
+                            Una L1 dedicada (Subnet-EVM) nos da control de cada capa: validators, gas, throughput,
+                            compliance. Eso es lo que las L2 genéricas de Ethereum no pueden ofrecer.
+                        </p>
+                    </div>
+
+                    <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <Advantage
+                            title="Gas pagado en USDC"
+                            body="Una PyME en Guadalajara no necesita comprar AVAX para repagar un préstamo. Configurable a nivel L1 — fee token = activo subyacente."
+                        />
+                        <Advantage
+                            title="Validators institucionales"
+                            body="El validator set lo controlamos. Bancos, fintechs reguladas y entidades del ecosistema firman cada bloque — KYC institucional a nivel de infraestructura."
+                        />
+                        <Advantage
+                            title="Throughput dedicado"
+                            body="2 segundos de block time exclusivos para crédito. Cero contención con NFTs, memecoins o flash loans de otras apps."
+                        />
+                        <Advantage
+                            title="Permissioning granular"
+                            body="Native Minter, Tx Allow List, Contract Deployer Allow List, Reward Manager — todos los precompiles configurables por governance."
+                        />
+                        <Advantage
+                            title="Costos predecibles"
+                            body="Set fixed gas pricing por bloque. Para issuers que postean attestations cada hora, el costo es presupuestable, no sujeto a subastas."
+                        />
+                        <Advantage
+                            title="Interop nativa"
+                            body="ICM (Interchain Messaging) y Warp activados — capital se bridgea desde C-Chain mainnet sin terceros."
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* ───── CTA cards ───── */}
+            <section className="border-t border-zinc-200 dark:border-zinc-800">
+                <div className="mx-auto max-w-6xl px-6 py-20">
+                    <div className="grid gap-6 sm:grid-cols-3">
+                        <Card
+                            title="Para lenders"
+                            body="Depositá USDC en un pool ERC-4626. Recibí shares (avUSDC) que rinden por las fees cobradas a borrowers."
+                            href="/lend"
+                            cta="Ir a Lend"
+                        />
+                        <Card
+                            title="Para PyMEs"
+                            body="Conectá tu wallet y tomá préstamos a término en USDC. Tu cap crece automáticamente con cada repago."
+                            href="/borrow"
+                            cta="Ir a Borrow"
+                        />
+                        <Card
+                            title="Stats del protocolo"
+                            body="TVL, contratos y comparación entre Fuji C-Chain y Aval L1. Todo verificable on-chain."
+                            href="/stats"
+                            cta="Ver stats"
+                        />
+                    </div>
+                </div>
+            </section>
+        </div>
+    );
+}
+
+// ───── data ─────
+
+const LEVELS = [
+    {level: 1, cap: 100, fee: "5.00%", color: "from-zinc-400 to-zinc-300"},
+    {level: 2, cap: 250, fee: "4.25%", color: "from-zinc-500 to-zinc-400"},
+    {level: 3, cap: 500, fee: "3.50%", color: "from-zinc-500 to-zinc-400"},
+    {level: 4, cap: 1_000, fee: "3.00%", color: "from-zinc-600 to-zinc-500"},
+    {level: 5, cap: 2_000, fee: "2.50%", color: "from-zinc-600 to-zinc-500"},
+    {level: 6, cap: 3_500, fee: "2.25%", color: "from-zinc-700 to-zinc-600"},
+    {level: 7, cap: 5_500, fee: "2.00%", color: "from-zinc-700 to-zinc-600"},
+    {level: 8, cap: 8_000, fee: "1.75%", color: "from-zinc-800 to-zinc-700"},
+    {level: 9, cap: 11_000, fee: "1.50%", color: "from-zinc-800 to-zinc-700"},
+    {level: 10, cap: 14_500, fee: "1.25%", color: "from-red-700 to-red-600"},
+    {level: 11, cap: 20_000, fee: "1.00%", color: "from-red-600 to-red-500"},
+];
+
+// ───── components ─────
+
+function CountryStat({flag, country, pct}: {flag: string; country: string; pct: string}) {
+    return (
+        <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="flex items-baseline justify-between">
+                <div className="text-2xl">{flag}</div>
+                <div className="text-3xl font-semibold text-red-600 dark:text-red-400">{pct}</div>
+            </div>
+            <div className="mt-1 text-sm font-medium">{country}</div>
+            <div className="text-xs text-zinc-500">sin acceso a crédito adecuado</div>
+        </div>
+    );
+}
+
+function LevelCard({level, cap, fee, color}: {level: number; cap: number; fee: string; color: string}) {
+    return (
+        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="flex items-center justify-between">
+                <span
+                    className={`rounded-full bg-gradient-to-r ${color} px-2.5 py-0.5 text-xs font-bold text-white`}
+                >
+                    L{level}
+                </span>
+                <span className="text-xs text-zinc-500">{fee}</span>
+            </div>
+            <div className="mt-2 text-xl font-semibold">${cap.toLocaleString("en-US")}</div>
+            <div className="text-xs text-zinc-500">USDC cap</div>
+        </div>
+    );
+}
+
+function Advantage({title, body}: {title: string; body: string}) {
+    return (
+        <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
+            <h3 className="text-base font-semibold">{title}</h3>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{body}</p>
         </div>
     );
 }
