@@ -168,7 +168,7 @@ export default function Home() {
                         </span>
                         <br />
                         <span className="word" style={{animationDelay: ".35s"}}>
-                            PyMEs
+                            <span className="accent">PyMEs</span>
                         </span>{" "}
                         <span className="word" style={{animationDelay: ".45s"}}>
                             de
