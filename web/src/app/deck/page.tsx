@@ -9,6 +9,7 @@ const SLIDES = [
     "solucion",
     "como-funciona",
     "compliance",
+    "usdc",
     "builder",
     "model",
     "thanks",
@@ -93,6 +94,9 @@ export default function DeckPage() {
                 </Slide>
                 <Slide>
                     <ComplianceSlide />
+                </Slide>
+                <Slide>
+                    <UsdcSlide />
                 </Slide>
                 <Slide>
                     <BuilderSlide />
@@ -333,6 +337,59 @@ function ComplianceSlide() {
                         <p>{s.d}</p>
                     </div>
                 ))}
+            </div>
+        </div>
+    );
+}
+
+function UsdcSlide() {
+    return (
+        <div>
+            <div className="deck-eyebrow">USDC en Aval L1</div>
+            <h1 className="deck-h1">
+                Cómo llega <span className="accent">USDC real</span> a nuestra L1.
+            </h1>
+            <p className="deck-lead">
+                Aval L1 es una Subnet-EVM en Avacloud — el USDC canonical de Circle vive en C-Chain. Tenemos un path
+                claro para mover liquidez sin reinventar la rueda.
+            </p>
+            <div className="deck-usdc">
+                <div className="deck-usdc-card current">
+                    <div className="stage">
+                        <span className="tag">v1 · Hoy</span>
+                        <span className="status">Live en testnet</span>
+                    </div>
+                    <h4>
+                        <span className="mono">mUSDC</span> nativo en ambas chains
+                    </h4>
+                    <p>
+                        MockUSDC con faucet público corriendo simultáneamente en Avalanche Fuji y Aval L1. Mismo
+                        ABI, misma economía, gas pagado en AVAX / AVL. Permite demo end-to-end sin depender de
+                        bridges externos durante el período de testing.
+                    </p>
+                    <div className="deck-usdc-flow mono">
+                        Fuji USDC.faucet() · L1 USDC.faucet() → independientes
+                    </div>
+                </div>
+
+                <div className="deck-usdc-card next">
+                    <div className="stage">
+                        <span className="tag accent">v2 · Roadmap</span>
+                        <span className="status">Avalanche-native</span>
+                    </div>
+                    <h4>
+                        Avalanche <span className="accent">ICTT</span> (Interchain Token Transfer)
+                    </h4>
+                    <p>
+                        <span className="mono">TokenSource</span> en C-Chain locks canonical USDC,{" "}
+                        <span className="mono">TokenDestination</span> en Aval L1 mints <span className="mono">bUSDC.e</span>.
+                        Routing vía Teleporter — ya pre-deployado en cada Avacloud subnet. Es el primitivo oficial
+                        que usa toda subnet seria del ecosistema (Beam, DFK, Lamina1).
+                    </p>
+                    <div className="deck-usdc-flow mono">
+                        C-Chain TokenSource.send() → Teleporter → L1 TokenDestination.mint()
+                    </div>
+                </div>
             </div>
         </div>
     );
