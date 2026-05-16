@@ -227,7 +227,7 @@ function KybForm({
         <form onSubmit={onSubmit} className="mt-8 space-y-6">
             <Section title="1. Información de la empresa">
                 <Field label="Razón social">
-                    <input className="input" required value={form.businessName} onChange={(e) => setForm({...form, businessName: e.target.value})} placeholder="Panadería La Esperanza S.A." />
+                    <input className="input" required value={form.businessName} onChange={(e) => setForm({...form, businessName: e.target.value})} placeholder="Software Factory S.A." />
                 </Field>
                 <Field label="Website">
                     <input className="input" required value={form.website} onChange={(e) => setForm({...form, website: e.target.value})} placeholder="https://laesperanza.mx" />
