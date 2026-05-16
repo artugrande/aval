@@ -4,7 +4,8 @@ import {useMemo} from "react";
 import type {Address} from "viem";
 import {useReadContract, useReadContracts} from "wagmi";
 
-import {contracts, creditManagerAbi, type Loan} from "@/lib/contracts";
+import {creditManagerAbi, getContracts, type Loan} from "@/lib/contracts";
+import {useChainId} from "wagmi";
 
 /**
  * Reads all loans on the CreditManager and returns just those belonging to `wallet`.
@@ -15,6 +16,8 @@ import {contracts, creditManagerAbi, type Loan} from "@/lib/contracts";
  * subgraph or Supabase trigger instead.
  */
 export function useBorrowerLoans(wallet: Address | undefined) {
+    const chainId = useChainId();
+    const contracts = getContracts(chainId);
     const {
         data: nextLoanId,
         refetch: refetchNextId,
@@ -43,7 +46,7 @@ export function useBorrowerLoans(wallet: Address | undefined) {
             abi: creditManagerAbi,
             functionName: "loans" as const,
             args: [id] as const,
-        })),
+        } as const)),
         query: {enabled: loanIds.length > 0 && !!wallet},
     });
 

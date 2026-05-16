@@ -38,7 +38,7 @@ export function Header() {
                         })}
                     </nav>
                 </div>
-                <ConnectButton showBalance={false} chainStatus="icon" />
+                <ConnectButton showBalance={false} chainStatus="full" />
             </div>
         </header>
     );

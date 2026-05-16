@@ -3,11 +3,14 @@
 import {useState} from "react";
 import {useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt} from "wagmi";
 
-import {contracts, erc20Abi, FAUCET_MAX_MICRO, isDeployed, lendingPoolAbi, mockUsdcAbi} from "@/lib/contracts";
+import {erc20Abi, FAUCET_MAX_MICRO, getContracts, isDeployed, lendingPoolAbi, mockUsdcAbi} from "@/lib/contracts";
+import {useChainId} from "wagmi";
 import {formatUsdc, parseUsdc, snowtraceUrl} from "@/lib/format";
 
 export default function LendPage() {
     const {address, isConnected} = useAccount();
+    const chainId = useChainId();
+    const contracts = getContracts(chainId);
     const [mode, setMode] = useState<"deposit" | "withdraw">("deposit");
     const [amount, setAmount] = useState("");
     const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
@@ -112,7 +115,7 @@ export default function LendPage() {
                 <Stat label="Valor de tus shares" value={`$${formatUsdc(shareValue as bigint | undefined)} USDC`} />
             </div>
 
-            <FaucetBanner usdcBalance={usdcBalance as bigint | undefined} />
+            <FaucetBanner usdcBalance={usdcBalance as bigint | undefined} usdcAddress={contracts.usdc} />
 
 
             <div className="mt-10 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
@@ -170,12 +173,12 @@ export default function LendPage() {
     );
 }
 
-function FaucetBanner({usdcBalance}: {usdcBalance: bigint | undefined}) {
+function FaucetBanner({usdcBalance, usdcAddress}: {usdcBalance: bigint | undefined; usdcAddress: `0x${string}`}) {
     const {writeContract, isPending, data: hash} = useWriteContract();
     const {isLoading: mining, isSuccess} = useWaitForTransactionReceipt({hash});
     const onFaucet = () =>
         writeContract({
-            address: contracts.usdc,
+            address: usdcAddress,
             abi: mockUsdcAbi,
             functionName: "faucet",
             args: [FAUCET_MAX_MICRO],

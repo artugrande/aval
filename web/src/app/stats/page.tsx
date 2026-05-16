@@ -1,73 +1,110 @@
 "use client";
 
 import {useReadContract} from "wagmi";
+import {avalancheFuji} from "wagmi/chains";
 
-import {contracts, isDeployed, lendingPoolAbi} from "@/lib/contracts";
+import {getContracts, isDeployed, lendingPoolAbi, type ChainContracts} from "@/lib/contracts";
+import {avalL1} from "@/lib/wagmi-chains";
 import {formatUsdc, shortAddress, snowtraceUrl} from "@/lib/format";
 
+interface ChainInfo {
+    chainId: number;
+    name: string;
+    nativeToken: string;
+    explorerBase: string | null; // null = no explorer (Aval L1 yet)
+    accent: string; // tailwind color class
+}
+
+const CHAINS: ChainInfo[] = [
+    {chainId: avalancheFuji.id, name: "Avalanche Fuji C-Chain", nativeToken: "AVAX", explorerBase: "https://testnet.snowtrace.io", accent: "text-red-600 dark:text-red-400"},
+    {chainId: avalL1.id, name: "Aval L1 (Subnet-EVM)", nativeToken: "AVL", explorerBase: process.env.NEXT_PUBLIC_AVAL_L1_EXPLORER || null, accent: "text-blue-600 dark:text-blue-400"},
+];
+
 export default function StatsPage() {
+    return (
+        <main className="mx-auto max-w-5xl px-6 py-12">
+            <h1 className="text-3xl font-semibold tracking-tight">Stats</h1>
+            <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+                El protocolo corre en dos chains. El demo principal es Avalanche Fuji C-Chain (público); Aval L1 es nuestra propia
+                Subnet-EVM corriendo en Avacloud — misma API de contratos, gas pagado en `AVL`.
+            </p>
+
+            <div className="mt-10 grid gap-6 lg:grid-cols-2">
+                {CHAINS.map((chain) => (
+                    <ChainCard key={chain.chainId} chain={chain} />
+                ))}
+            </div>
+        </main>
+    );
+}
+
+function ChainCard({chain}: {chain: ChainInfo}) {
+    const contracts = getContracts(chain.chainId);
     const deployed = isDeployed(contracts.lendingPool);
 
     const {data: tvl} = useReadContract({
         address: contracts.lendingPool,
         abi: lendingPoolAbi,
         functionName: "totalAssets",
+        chainId: chain.chainId,
         query: {enabled: deployed},
     });
 
     return (
-        <main className="mx-auto max-w-4xl px-6 py-12">
-            <h1 className="text-3xl font-semibold tracking-tight">Stats</h1>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400">Estado del protocolo, verificable on-chain en Snowtrace.</p>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                <Stat label="TVL del pool" value={deployed ? `$${formatUsdc(tvl as bigint | undefined)} USDC` : "—"} />
-                <Stat label="Red" value="Avalanche Fuji testnet (43113)" />
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="flex items-baseline justify-between">
+                <h2 className={`text-lg font-semibold ${chain.accent}`}>{chain.name}</h2>
+                <span className="text-xs text-zinc-500">chainId {chain.chainId}</span>
             </div>
 
-            <h2 className="mt-12 text-lg font-semibold">Contratos</h2>
-            <div className="mt-4 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <Stat label="TVL del pool" value={deployed ? `$${formatUsdc(tvl as bigint | undefined)} USDC` : "—"} />
+                <Stat label="Gas token" value={chain.nativeToken} />
+            </div>
+
+            <h3 className="mt-6 text-sm font-semibold uppercase tracking-wider text-zinc-500">Contratos</h3>
+            <div className="mt-2 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
                 <table className="w-full text-sm">
                     <tbody>
-                        <ContractRow name="USDC" address={contracts.usdc} />
-                        <ContractRow name="IssuerRegistry" address={contracts.issuerRegistry} />
-                        <ContractRow name="LendingPool (ERC-4626)" address={contracts.lendingPool} />
-                        <ContractRow name="CreditManager" address={contracts.creditManager} />
+                        <ContractRow name="USDC" address={contracts.usdc} explorerBase={chain.explorerBase} />
+                        <ContractRow name="IssuerRegistry" address={contracts.issuerRegistry} explorerBase={chain.explorerBase} />
+                        <ContractRow name="LendingPool" address={contracts.lendingPool} explorerBase={chain.explorerBase} />
+                        <ContractRow name="CreditManager" address={contracts.creditManager} explorerBase={chain.explorerBase} />
                     </tbody>
                 </table>
             </div>
 
             {!deployed && (
-                <p className="mt-6 text-sm text-zinc-500">
-                    Aún no desplegado. Después de <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">forge script Deploy.s.sol</code>{" "}
-                    pegá las addresses en <code>web/.env.local</code>.
-                </p>
+                <p className="mt-3 text-xs text-zinc-500">Aún no desplegado en esta chain.</p>
             )}
-        </main>
+        </div>
     );
 }
 
 function Stat({label, value}: {label: string; value: string}) {
     return (
-        <div className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+        <div className="rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
             <div className="text-xs uppercase tracking-wider text-zinc-500">{label}</div>
-            <div className="mt-1 text-xl font-semibold">{value}</div>
+            <div className="mt-0.5 text-lg font-semibold">{value}</div>
         </div>
     );
 }
 
-function ContractRow({name, address}: {name: string; address: string}) {
+function ContractRow({name, address, explorerBase}: {name: string; address: string; explorerBase: string | null}) {
     const zero = address === "0x0000000000000000000000000000000000000000";
+    const url = explorerBase ? `${explorerBase}/address/${address}` : null;
     return (
         <tr className="border-b border-zinc-100 last:border-b-0 dark:border-zinc-900">
-            <td className="px-4 py-3 font-medium">{name}</td>
-            <td className="px-4 py-3 font-mono text-xs text-zinc-500">
+            <td className="px-3 py-2 font-medium">{name}</td>
+            <td className="px-3 py-2 font-mono text-xs text-zinc-500">
                 {zero ? (
                     "no desplegado"
-                ) : (
-                    <a href={snowtraceUrl(address)} target="_blank" rel="noreferrer" className="hover:underline">
+                ) : url ? (
+                    <a href={url} target="_blank" rel="noreferrer" className="hover:underline">
                         {shortAddress(address)} ↗
                     </a>
+                ) : (
+                    <span>{shortAddress(address)}</span>
                 )}
             </td>
         </tr>

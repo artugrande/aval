@@ -10,8 +10,11 @@ import {
 import {createConfig, http} from "wagmi";
 import {avalancheFuji} from "wagmi/chains";
 
-// Fuji testnet only for v1. Mainnet Avalanche + a custom L1 are roadmap.
-export const supportedChains = [avalancheFuji] as const;
+import {avalL1} from "./wagmi-chains";
+
+// v1 demo: Fuji C-Chain (public, anyone can connect) + Aval L1 (Subnet-EVM on Avacloud).
+// Both chains use the same contract API; addresses differ per chain (see contracts.ts).
+export const supportedChains = [avalancheFuji, avalL1] as const;
 
 // WalletConnect Cloud projectId. Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID in env.
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "aval-demo-placeholder";
@@ -39,6 +42,7 @@ export const wagmiConfig = createConfig({
     ssr: true,
     transports: {
         [avalancheFuji.id]: http(),
+        [avalL1.id]: http(),
     },
 });
 

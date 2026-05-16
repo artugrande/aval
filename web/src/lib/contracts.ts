@@ -1,16 +1,53 @@
 import type {Address} from "viem";
+import {avalancheFuji} from "wagmi/chains";
 
-// Deployed addresses come from `forge script ... --broadcast` on Fuji.
-// Wire NEXT_PUBLIC_* env vars in `.env.local` after deploy. Zero address means
-// "not deployed yet" — components should render a graceful empty state.
+import {avalL1} from "./wagmi-chains";
+
+// Deployed addresses come from `forge script ... --broadcast` on each chain.
+// Zero address = "not deployed on this chain yet"; components render an empty state.
 const ZERO = "0x0000000000000000000000000000000000000000" as Address;
+const envAddr = (k: string): Address => (process.env[k] as Address | undefined) ?? ZERO;
 
-export const contracts = {
-    issuerRegistry: (process.env.NEXT_PUBLIC_ISSUER_REGISTRY_ADDRESS as Address | undefined) ?? ZERO,
-    lendingPool: (process.env.NEXT_PUBLIC_LENDING_POOL_ADDRESS as Address | undefined) ?? ZERO,
-    creditManager: (process.env.NEXT_PUBLIC_CREDIT_MANAGER_ADDRESS as Address | undefined) ?? ZERO,
-    usdc: (process.env.NEXT_PUBLIC_USDC_ADDRESS as Address | undefined) ?? ZERO,
-} as const;
+export interface ChainContracts {
+    issuerRegistry: Address;
+    lendingPool: Address;
+    creditManager: Address;
+    usdc: Address;
+}
+
+// Registry of Aval deployments per chain. Add a new entry when the protocol
+// goes live on a new chain. Components read the active chain via `useChainId()`
+// and `getContracts(chainId)`.
+const REGISTRY: Record<number, ChainContracts> = {
+    [avalancheFuji.id]: {
+        issuerRegistry: envAddr("NEXT_PUBLIC_ISSUER_REGISTRY_ADDRESS"),
+        lendingPool: envAddr("NEXT_PUBLIC_LENDING_POOL_ADDRESS"),
+        creditManager: envAddr("NEXT_PUBLIC_CREDIT_MANAGER_ADDRESS"),
+        usdc: envAddr("NEXT_PUBLIC_USDC_ADDRESS"),
+    },
+    [avalL1.id]: {
+        issuerRegistry: envAddr("NEXT_PUBLIC_L1_ISSUER_REGISTRY_ADDRESS"),
+        lendingPool: envAddr("NEXT_PUBLIC_L1_LENDING_POOL_ADDRESS"),
+        creditManager: envAddr("NEXT_PUBLIC_L1_CREDIT_MANAGER_ADDRESS"),
+        usdc: envAddr("NEXT_PUBLIC_L1_USDC_ADDRESS"),
+    },
+};
+
+const FALLBACK: ChainContracts = {
+    issuerRegistry: ZERO,
+    lendingPool: ZERO,
+    creditManager: ZERO,
+    usdc: ZERO,
+};
+
+/** Returns the contract addresses for the given chain. */
+export function getContracts(chainId: number | undefined): ChainContracts {
+    if (chainId == null) return FALLBACK;
+    return REGISTRY[chainId] ?? FALLBACK;
+}
+
+/** Backwards-compat shim. New code should call `getContracts(useChainId())`. */
+export const contracts: ChainContracts = REGISTRY[avalancheFuji.id] ?? FALLBACK;
 
 export const isDeployed = (addr: Address) => addr !== ZERO;
 

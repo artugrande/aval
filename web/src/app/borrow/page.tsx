@@ -6,22 +6,25 @@ import {useAccount, useReadContract, useWriteContract, useWaitForTransactionRece
 import {avalancheFuji} from "wagmi/chains";
 
 import {
-    contracts,
     creditManagerAbi,
     erc20Abi,
     feeBpsForLevel,
     formatPercentage,
+    getContracts,
     isDeployed,
     type Loan,
     loanStatus,
     loanTotalDue,
 } from "@/lib/contracts";
+import {useChainId} from "wagmi";
 import {formatUsdc, parseUsdc, snowtraceUrl} from "@/lib/format";
 import {kybSubmit, scoreAttest, type AttestationResponse, type KybSubmitResponse} from "@/lib/api";
 import {useBorrowerLoans} from "@/hooks/useBorrowerLoans";
 
 export default function BorrowPage() {
     const {address, isConnected} = useAccount();
+    const chainId = useChainId();
+    const contracts = getContracts(chainId);
     const [kyb, setKyb] = useState<KybSubmitResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -96,6 +99,8 @@ function BorrowForm({
     onError: (e: string) => void;
     onRefresh: () => void;
 }) {
+    const chainId = useChainId();
+    const contracts = getContracts(chainId);
     const [amount, setAmount] = useState("");
     const [tenor, setTenor] = useState(30);
     const [busy, setBusy] = useState(false);
@@ -320,6 +325,8 @@ function LoanCard({
     onRepaid: () => void;
     onError: (e: string) => void;
 }) {
+    const chainId = useChainId();
+    const contracts = getContracts(chainId);
     const status = loanStatus(loan);
     const total = loanTotalDue(loan);
     const fee = total - loan.principal;
