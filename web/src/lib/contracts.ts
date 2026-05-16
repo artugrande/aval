@@ -18,6 +18,7 @@ export interface ChainContracts {
     lendingPool: Address;
     creditManager: Address;
     usdc: Address;
+    borrowerRegistry: Address;
 }
 
 // Registry of Aval deployments per chain. Add a new entry when the protocol
@@ -29,12 +30,14 @@ const REGISTRY: Record<number, ChainContracts> = {
         lendingPool: fallback(process.env.NEXT_PUBLIC_LENDING_POOL_ADDRESS),
         creditManager: fallback(process.env.NEXT_PUBLIC_CREDIT_MANAGER_ADDRESS),
         usdc: fallback(process.env.NEXT_PUBLIC_USDC_ADDRESS),
+        borrowerRegistry: fallback(process.env.NEXT_PUBLIC_BORROWER_REGISTRY_ADDRESS),
     },
     [avalL1.id]: {
         issuerRegistry: fallback(process.env.NEXT_PUBLIC_L1_ISSUER_REGISTRY_ADDRESS),
         lendingPool: fallback(process.env.NEXT_PUBLIC_L1_LENDING_POOL_ADDRESS),
         creditManager: fallback(process.env.NEXT_PUBLIC_L1_CREDIT_MANAGER_ADDRESS),
         usdc: fallback(process.env.NEXT_PUBLIC_L1_USDC_ADDRESS),
+        borrowerRegistry: fallback(process.env.NEXT_PUBLIC_L1_BORROWER_REGISTRY_ADDRESS),
     },
 };
 
@@ -43,7 +46,29 @@ const FALLBACK: ChainContracts = {
     lendingPool: ZERO,
     creditManager: ZERO,
     usdc: ZERO,
+    borrowerRegistry: ZERO,
 };
+
+export const borrowerRegistryAbi = [
+    {
+        type: "function",
+        name: "isApproved",
+        stateMutability: "view",
+        inputs: [{name: "borrower", type: "address"}],
+        outputs: [{name: "", type: "bool"}],
+    },
+    {
+        type: "function",
+        name: "borrowers",
+        stateMutability: "view",
+        inputs: [{name: "", type: "address"}],
+        outputs: [
+            {name: "approved", type: "bool"},
+            {name: "approvedAt", type: "uint64"},
+            {name: "profileHash", type: "bytes32"},
+        ],
+    },
+] as const;
 
 /** Returns the contract addresses for the given chain. */
 export function getContracts(chainId: number | undefined): ChainContracts {
