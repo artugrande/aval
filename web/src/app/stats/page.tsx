@@ -13,11 +13,12 @@ interface ChainInfo {
     nativeToken: string;
     explorerBase: string | null; // null = no explorer (Aval L1 yet)
     accent: string; // tailwind color class
+    logo: string;
 }
 
 const CHAINS: ChainInfo[] = [
-    {chainId: avalancheFuji.id, name: "Avalanche Fuji C-Chain", nativeToken: "AVAX", explorerBase: "https://testnet.snowtrace.io", accent: "text-red-600 dark:text-red-400"},
-    {chainId: avalL1.id, name: "Aval L1 (Subnet-EVM)", nativeToken: "AVL", explorerBase: process.env.NEXT_PUBLIC_AVAL_L1_EXPLORER || null, accent: "text-blue-600 dark:text-blue-400"},
+    {chainId: avalancheFuji.id, name: "Avalanche Fuji C-Chain", nativeToken: "AVAX", explorerBase: "https://testnet.snowtrace.io", accent: "text-red-600 dark:text-red-400", logo: "/avax.svg"},
+    {chainId: avalL1.id, name: "Aval L1 (Subnet-EVM)", nativeToken: "AVL", explorerBase: process.env.NEXT_PUBLIC_AVAL_L1_EXPLORER || null, accent: "text-red-600 dark:text-red-400", logo: "/aval.svg"},
 ];
 
 export default function StatsPage() {
@@ -52,9 +53,13 @@ function ChainCard({chain}: {chain: ChainInfo}) {
 
     return (
         <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="flex items-baseline justify-between">
-                <h2 className={`text-lg font-semibold ${chain.accent}`}>{chain.name}</h2>
-                <span className="text-xs text-zinc-500">chainId {chain.chainId}</span>
+            <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={chain.logo} alt="" className="h-7 w-7 shrink-0 object-contain" />
+                    <h2 className={`text-lg font-semibold ${chain.accent}`}>{chain.name}</h2>
+                </div>
+                <span className="shrink-0 text-xs text-zinc-500">chainId {chain.chainId}</span>
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">

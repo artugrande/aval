@@ -118,7 +118,7 @@ export default function Home() {
 
                     <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <Advantage
-                            icon="💵"
+                            iconImg="/usdclogo.png"
                             title="Todo en dólares digitales"
                             body={
                                 <>
@@ -200,26 +200,30 @@ export default function Home() {
 
                     {/* AI verification callout */}
                     <div className="mt-12 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
-                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <h3 className="text-base font-semibold">
-                                    🤖 Verificación con IA en{" "}
-                                    <span className="text-red-600 dark:text-red-400">segundos</span>, no semanas
-                                </h3>
-                                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                                    Tu Business Profile lo revisa <strong>Claude Haiku 4.5</strong> de{" "}
-                                    <a
-                                        href="https://www.anthropic.com"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="underline hover:text-zinc-900 dark:hover:text-zinc-100"
-                                    >
-                                        Anthropic
-                                    </a>{" "}
-                                    en menos de 15 segundos. Sin papeles, sin filas, sin "3 días hábiles". Si te
-                                    aprobamos, tu wallet queda <strong>registrada on-chain en ambas redes</strong>{" "}
-                                    automáticamente — auditable por cualquiera.
-                                </p>
+                        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex items-start gap-4">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src="/claudelogo.png" alt="Claude (Anthropic)" className="h-12 w-12 shrink-0 object-contain" />
+                                <div>
+                                    <h3 className="text-base font-semibold">
+                                        Verificación con IA en{" "}
+                                        <span className="text-red-600 dark:text-red-400">segundos</span>, no semanas
+                                    </h3>
+                                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                        Tu Business Profile lo revisa <strong>Claude Haiku 4.5</strong> de{" "}
+                                        <a
+                                            href="https://www.anthropic.com"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="underline hover:text-zinc-900 dark:hover:text-zinc-100"
+                                        >
+                                            Anthropic
+                                        </a>{" "}
+                                        en menos de 15 segundos. Sin papeles, sin filas, sin "3 días hábiles". Si te
+                                        aprobamos, tu wallet queda <strong>registrada on-chain en ambas redes</strong>{" "}
+                                        automáticamente — auditable por cualquiera.
+                                    </p>
+                                </div>
                             </div>
                             <Link
                                 href="/borrow"
@@ -232,16 +236,20 @@ export default function Home() {
 
                     {/* L1 callout */}
                     <div className="mt-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
-                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <h3 className="text-base font-semibold">
-                                    🏔️ <span className="text-red-600 dark:text-red-400">Aval L1</span> — nuestra blockchain dedicada en Avalanche
-                                </h3>
-                                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                                    Configuramos una Subnet-EVM propia donde corren los mismos contratos que ves en
-                                    Fuji. Es la base de v2: ahí vamos a habilitar gas en USDC y validators
-                                    institucionales conforme onboardeamos partners.
-                                </p>
+                        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex items-start gap-4">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src="/avax.svg" alt="Avalanche" className="h-12 w-12 shrink-0 object-contain" />
+                                <div>
+                                    <h3 className="text-base font-semibold">
+                                        <span className="text-red-600 dark:text-red-400">Aval L1</span> — nuestra blockchain dedicada en Avalanche
+                                    </h3>
+                                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                        Configuramos una Subnet-EVM propia donde corren los mismos contratos que ves
+                                        en Fuji. Es la base de v2: ahí vamos a habilitar gas en USDC y validators
+                                        institucionales conforme onboardeamos partners.
+                                    </p>
+                                </div>
                             </div>
                             <Link
                                 href="/stats"
@@ -343,11 +351,26 @@ function LevelCard({level, cap, fee, color}: {level: number; cap: number; fee: s
     );
 }
 
-function Advantage({icon, title, body}: {icon?: string; title: string; body: React.ReactNode}) {
+function Advantage({
+    icon,
+    iconImg,
+    title,
+    body,
+}: {
+    icon?: string;
+    iconImg?: string;
+    title: string;
+    body: React.ReactNode;
+}) {
     return (
         <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            {icon && <div className="text-2xl">{icon}</div>}
-            <h3 className={`text-base font-semibold ${icon ? "mt-2" : ""}`}>{title}</h3>
+            {iconImg ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={iconImg} alt="" className="h-8 w-8 object-contain" />
+            ) : icon ? (
+                <div className="text-2xl">{icon}</div>
+            ) : null}
+            <h3 className={`text-base font-semibold ${icon || iconImg ? "mt-2" : ""}`}>{title}</h3>
             <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{body}</div>
         </div>
     );

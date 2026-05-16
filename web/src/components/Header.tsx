@@ -16,8 +16,9 @@ export function Header() {
         <header className="border-b border-zinc-200 dark:border-zinc-800">
             <div className="mx-auto max-w-6xl flex items-center justify-between px-6 py-4">
                 <div className="flex items-center gap-8">
-                    <Link href="/" className="text-2xl font-bold tracking-tight">
-                        Aval
+                    <Link href="/" className="flex items-center" aria-label="Aval — home">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/aval.svg" alt="Aval" className="h-8 w-auto" />
                     </Link>
                     <nav className="flex items-center gap-5 text-sm">
                         {links.map((l) => {
