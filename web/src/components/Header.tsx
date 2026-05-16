@@ -12,6 +12,8 @@ const links = [
 
 export function Header() {
     const pathname = usePathname();
+    // Hide the global nav inside the deck — fullscreen presentation.
+    if (pathname.startsWith("/deck")) return null;
     return (
         <nav className="top">
             <div className="container inner">
