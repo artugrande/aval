@@ -235,12 +235,12 @@ export default function Home() {
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="text-base font-semibold">
-                                    🏔️ Construido sobre <span className="text-red-600 dark:text-red-400">Aval L1</span>, nuestra propia blockchain
+                                    🏔️ <span className="text-red-600 dark:text-red-400">Aval L1</span> — nuestra blockchain dedicada en Avalanche
                                 </h3>
                                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                                    Una red dedicada en Avalanche que controlamos enteramente — gas pagado en USDC,
-                                    validadores institucionales y throughput exclusivo para crédito. Eso es lo que
-                                    hace que todo lo de arriba sea posible.
+                                    Configuramos una Subnet-EVM propia donde corren los mismos contratos que ves en
+                                    Fuji. Es la base de v2: ahí vamos a habilitar gas en USDC y validators
+                                    institucionales conforme onboardeamos partners.
                                 </p>
                             </div>
                             <Link
