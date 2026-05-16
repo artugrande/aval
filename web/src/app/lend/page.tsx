@@ -6,7 +6,8 @@ import {useAccount, useReadContract, useWriteContract, useWaitForTransactionRece
 import {erc20Abi, FAUCET_MAX_MICRO, getContracts, isDeployed, lendingPoolAbi, mockUsdcAbi} from "@/lib/contracts";
 import {useChainId} from "wagmi";
 import {WrongChainNotice} from "@/components/WrongChainNotice";
-import {chainLabel, explorerUrl, formatUsdc, parseUsdc} from "@/lib/format";
+import {chainLabel, explorerUrl, formatUsdc, parseUsdc, shortAddress} from "@/lib/format";
+import {usePoolHistory, type PoolHistoryEntry} from "@/hooks/usePoolHistory";
 
 export default function LendPage() {
     const {address, isConnected} = useAccount();
@@ -158,6 +159,15 @@ export default function LendPage() {
                             onChange={(e) => setAmount(e.target.value)}
                             className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base dark:border-zinc-700 dark:bg-black"
                         />
+                        {mode === "withdraw" && (shareValue as bigint | undefined) && (shareValue as bigint) > 0n && (
+                            <button
+                                type="button"
+                                onClick={() => setAmount(formatUsdc(shareValue as bigint))}
+                                className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:bg-black dark:hover:bg-zinc-800"
+                            >
+                                Max
+                            </button>
+                        )}
                         <button
                             disabled={parsed == null || isPending || isMining}
                             onClick={onSubmit}
@@ -177,6 +187,11 @@ export default function LendPage() {
                             Wallet: ${formatUsdc(usdcBalance as bigint | undefined)} USDC disponibles.
                         </p>
                     )}
+                    {mode === "withdraw" && (
+                        <p className="mt-2 text-xs text-zinc-500">
+                            Disponible para retirar: ${formatUsdc(shareValue as bigint | undefined)} USDC (incluye yield acumulado).
+                        </p>
+                    )}
                     {isSuccess && txHash && (
                         <p className="mt-3 text-sm text-green-600 dark:text-green-400">
                             ✓ Transacción confirmada.{" "}
@@ -194,7 +209,115 @@ export default function LendPage() {
                     )}
                 </div>
             </div>
+
+            <PoolHistory
+                pool={contracts.lendingPool}
+                wallet={address}
+                chainId={chainId}
+                refetchKey={txHash}
+            />
         </main>
+    );
+}
+
+// ───── Pool history (Deposit + Withdraw events read on-chain) ─────
+
+function PoolHistory({
+    pool,
+    wallet,
+    chainId,
+    refetchKey,
+}: {
+    pool: `0x${string}`;
+    wallet: `0x${string}` | undefined;
+    chainId: number;
+    refetchKey: unknown;
+}) {
+    const {entries, loading, error} = usePoolHistory(
+        isDeployed(pool) ? pool : undefined,
+        wallet,
+        chainId,
+        refetchKey,
+    );
+    if (!wallet) return null;
+
+    return (
+        <section className="mt-10">
+            <div className="flex items-end justify-between gap-3">
+                <div>
+                    <h2 className="text-lg font-semibold">Tu historial en el pool</h2>
+                    <p className="mt-1 text-sm text-zinc-500">
+                        Cada depósito y retiro leído directo on-chain desde los eventos del LendingPool en {chainLabel(chainId)}.
+                    </p>
+                </div>
+            </div>
+
+            {loading && entries.length === 0 && (
+                <div className="mt-4 rounded-lg border border-zinc-200 p-4 text-sm text-zinc-500 dark:border-zinc-800">
+                    Cargando historial on-chain…
+                </div>
+            )}
+            {error && (
+                <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+                    Error leyendo eventos: {error}
+                </div>
+            )}
+            {!loading && entries.length === 0 && !error && (
+                <div className="mt-4 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-4 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900">
+                    Todavía no tenés depósitos ni retiros en este pool. Empezá depositando arriba.
+                </div>
+            )}
+            {entries.length > 0 && (
+                <ul className="mt-4 divide-y divide-zinc-100 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-900 dark:border-zinc-800">
+                    {entries.map((e) => (
+                        <PoolHistoryRow key={`${e.txHash}-${e.kind}`} entry={e} chainId={chainId} />
+                    ))}
+                </ul>
+            )}
+        </section>
+    );
+}
+
+function PoolHistoryRow({entry, chainId}: {entry: PoolHistoryEntry; chainId: number}) {
+    const isDeposit = entry.kind === "deposit";
+    const url = explorerUrl(chainId, entry.txHash, "tx");
+    const when = entry.timestamp ? new Date(entry.timestamp * 1000) : null;
+    const whenLabel = when
+        ? `${when.toLocaleDateString("es-AR", {day: "2-digit", month: "short"})} · ${when.toLocaleTimeString("es-AR", {hour: "2-digit", minute: "2-digit"})}`
+        : `block ${entry.blockNumber.toString()}`;
+    return (
+        <li className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div className="flex items-center gap-3">
+                <span
+                    className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
+                        isDeposit
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200"
+                            : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
+                    }`}
+                    aria-hidden
+                >
+                    {isDeposit ? "↓" : "↑"}
+                </span>
+                <div>
+                    <div className="text-sm font-medium">
+                        {isDeposit ? "Depósito" : "Retiro"} · ${formatUsdc(entry.assets)} USDC
+                    </div>
+                    <div className="text-xs text-zinc-500">
+                        {whenLabel} · {formatUsdc(entry.shares)} avUSDC
+                    </div>
+                </div>
+            </div>
+            {url && (
+                <a
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-zinc-500 underline hover:text-zinc-700 dark:hover:text-zinc-300"
+                >
+                    {shortAddress(entry.txHash)} ↗
+                </a>
+            )}
+        </li>
     );
 }
 

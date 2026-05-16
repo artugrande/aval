@@ -726,8 +726,13 @@ function LoanCard({loan, wallet, onRepaid, onError}: {loan: Loan; wallet: Addres
                         <span className="font-medium text-zinc-700 dark:text-zinc-300">${formatUsdc(total)}</span>
                     </div>
                     <div className="mt-1 text-xs text-zinc-500">
-                        {status === "repaid" ? "Repagado ✓" : status === "defaulted" ? "En default" :
-                         status === "overdue" ? `Vencido hace ${-daysToMaturity}d` : `Vence en ${daysToMaturity}d`}
+                        {status === "repaid"
+                            ? "Repagado ✓"
+                            : status === "defaulted"
+                              ? "En default · L0 + blacklist (no podés pedir nuevos préstamos)"
+                              : status === "overdue"
+                                ? `Vencido hace ${-daysToMaturity}d · Pagá ya o pasás a default → L0 + blacklist`
+                                : `Vence en ${daysToMaturity}d`}
                     </div>
                 </div>
                 {(status === "active" || status === "overdue") && (

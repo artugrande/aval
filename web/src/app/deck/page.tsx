@@ -511,12 +511,12 @@ function RoadmapSlide() {
         {
             tag: "v2 · Distribución",
             t: "Marketplace de issuers",
-            d: "Onboard a partners institucionales (Konfio MX, Creditas BR, Belvo open finance) como issuers autorizados que originan borrowers verificados con su propio scoring + comparten upside del fee.",
+            d: "Onboard a partners institucionales como issuers autorizados que originan borrowers verificados con su propio scoring + comparten upside del fee.",
         },
         {
             tag: "v2 · UX",
             t: "Gasless onboarding (ERC-4337 + paymaster)",
-            d: "Hoy auto-fondeamos 0.02 AVL por wallet (relayer airdrop). v2: EntryPoint + Paymaster contract en Aval L1 — el usuario nunca toca gas, las primeras N txs las sponsoreamos transparente.",
+            d: "Hoy auto-fondeamos 0.02 AVL por wallet (relayer airdrop). v2: EntryPoint + Paymaster contract en Aval L1 — el usuario nunca toca gas.",
         },
     ];
     return (
@@ -527,7 +527,7 @@ function RoadmapSlide() {
             </h1>
             <p className="deck-lead">
                 El demo de hoy es completo end-to-end — pero hay cuatro piezas grandes que ya tenemos diseñadas y
-                quedaron fuera del scope del hackathon por tiempo o por requerir redeploy de contracts.
+                quedaron fuera del scope del hackathon.
             </p>
             <div className="deck-roadmap">
                 {items.map((it) => (
