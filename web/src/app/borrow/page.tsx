@@ -134,11 +134,12 @@ export default function BorrowPage() {
                             await loadStatus();
                             await refetchOnChain();
                         }}
-                        onRejected={(reason) =>
+                        onRejected={(reason, attempts) =>
                             setProfile({
                                 ...((profile ?? {}) as KybStatusResponse),
                                 status: "rejected",
                                 aiReason: reason,
+                                attempts,
                             })
                         }
                         onError={setError}
@@ -151,6 +152,36 @@ export default function BorrowPage() {
 
 // ───── KYB form ─────
 
+type KybFormState = {
+    businessName: string;
+    website: string;
+    country: (typeof COUNTRIES)[number]["code"];
+    taxId: string;
+    industry: (typeof INDUSTRIES)[number] | "";
+    businessModel: (typeof BUSINESS_MODELS)[number] | "";
+    monthlyVolume: (typeof VOLUMES)[number] | "";
+    repFullName: string;
+    repRole: string;
+    repEmail: string;
+    repLinkedin: string;
+};
+
+const KYB_FORM_DEFAULTS: KybFormState = {
+    businessName: "",
+    website: "",
+    country: "MX",
+    taxId: "",
+    industry: "",
+    businessModel: "",
+    monthlyVolume: "",
+    repFullName: "",
+    repRole: "",
+    repEmail: "",
+    repLinkedin: "",
+};
+
+const kybFormKey = (wallet: Address) => `aval-kyb-form-v1:${wallet.toLowerCase()}`;
+
 function KybForm({
     wallet,
     chainId,
@@ -161,32 +192,42 @@ function KybForm({
     wallet: Address;
     chainId: number;
     onApproved: () => void;
-    onRejected: (reason: string) => void;
+    onRejected: (reason: string, attempts: number) => void;
     onError: (e: string) => void;
 }) {
     const [submitting, setSubmitting] = useState(false);
-    const [form, setForm] = useState({
-        // Company Information
-        businessName: "",
-        website: "",
-        country: "MX" as (typeof COUNTRIES)[number]["code"],
-        taxId: "",
-        // Business Activity
-        industry: "" as (typeof INDUSTRIES)[number] | "",
-        businessModel: "" as (typeof BUSINESS_MODELS)[number] | "",
-        // Expected Usage
-        monthlyVolume: "" as (typeof VOLUMES)[number] | "",
-        // Representative
-        repFullName: "",
-        repRole: "",
-        repEmail: "",
-        repLinkedin: "",
+    const [softNotice, setSoftNotice] = useState<string | null>(null);
+
+    // Hydrate from sessionStorage so a rejection / refresh / accidental nav
+    // away doesn't wipe what the user typed. Keyed by wallet so different
+    // wallets don't pollute each other.
+    const [form, setForm] = useState<KybFormState>(() => {
+        if (typeof window === "undefined") return KYB_FORM_DEFAULTS;
+        try {
+            const raw = sessionStorage.getItem(kybFormKey(wallet));
+            if (!raw) return KYB_FORM_DEFAULTS;
+            const parsed = JSON.parse(raw) as Partial<KybFormState>;
+            return {...KYB_FORM_DEFAULTS, ...parsed};
+        } catch {
+            return KYB_FORM_DEFAULTS;
+        }
     });
+
+    // Persist on every change.
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        try {
+            sessionStorage.setItem(kybFormKey(wallet), JSON.stringify(form));
+        } catch {
+            /* sessionStorage might be full / disabled — silent fail */
+        }
+    }, [form, wallet]);
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (submitting) return;
         setSubmitting(true);
+        setSoftNotice(null);
         try {
             const taxIdHash = form.taxId.trim()
                 ? keccak256(stringToBytes(`${form.country}:${form.taxId.trim()}`))
@@ -206,10 +247,20 @@ function KybForm({
                 repEmail: form.repEmail.trim(),
                 repLinkedin: form.repLinkedin.trim() || undefined,
             });
+            if (res.status === "ai_unavailable") {
+                // Soft error: keep form mounted + data intact, surface a banner.
+                setSoftNotice(res.reason);
+                return;
+            }
             if (res.decision === "approve") {
+                // Clear cached form on successful approval so a future fresh
+                // flow doesn't reload stale data for the same wallet.
+                if (typeof window !== "undefined") {
+                    try { sessionStorage.removeItem(kybFormKey(wallet)); } catch { /* noop */ }
+                }
                 onApproved();
             } else {
-                onRejected(res.reason);
+                onRejected(res.reason, res.attempts);
             }
         } catch (err) {
             onError(err instanceof Error ? err.message : "submit_failed");
@@ -224,6 +275,12 @@ function KybForm({
 
     return (
         <form onSubmit={onSubmit} className="mt-8 space-y-6">
+            {softNotice && (
+                <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100">
+                    <div className="font-medium">⏳ Revisor con IA temporalmente no disponible</div>
+                    <div className="mt-1 text-xs">{softNotice}</div>
+                </div>
+            )}
             <Section title="1. Información de la empresa">
                 <Field label="Razón social">
                     <input className="input" required value={form.businessName} onChange={(e) => setForm({...form, businessName: e.target.value})} placeholder="Software Factory S.A." />

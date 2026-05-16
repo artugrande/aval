@@ -54,9 +54,9 @@ const ReviewSchema = z.object({
     decision: z.enum(["approve", "reject"]),
     reason: z
         .string()
-        .max(400)
+        .max(800)
         .describe(
-            "Brief explanation in Spanish. If approved: confirm and welcome. If rejected: state SPECIFICALLY which field/check failed so the user can fix it. Address the user directly with 'tu/tus'.",
+            "Brief explanation in Spanish (1-3 sentences, under 600 chars). If approved: confirm and welcome. If rejected: state SPECIFICALLY which field/check failed so the user can fix it. Address the user directly with 'tu/tus'.",
         ),
 });
 
@@ -190,16 +190,47 @@ export async function POST(req: Request) {
         decision = "reject";
         reason = buildWavyRejectionMessage(wavyScan!);
     } else {
-        try {
-            const result = await generateObject({
-                model: anthropic("claude-haiku-4-5"),
-                schema: ReviewSchema,
-                prompt: buildPrompt(body, wavyScan),
-            });
-            decision = result.object.decision;
-            reason = result.object.reason;
-        } catch (e) {
-            console.error("AI review error:", e);
+        // Try the AI review up to 2 times — first failure is often a schema
+        // mismatch (Claude wrote a too-long reason, or returned text not JSON).
+        // If both fail we surface 'ai_unavailable' instead of pretending it's
+        // a real reject, so the user doesn't lose their form data and can
+        // retry without 'attempts' going up.
+        let lastError: unknown = null;
+        for (let attempt = 1; attempt <= 2; attempt++) {
+            try {
+                const result = await generateObject({
+                    model: anthropic("claude-haiku-4-5"),
+                    schema: ReviewSchema,
+                    prompt: buildPrompt(body, wavyScan),
+                });
+                decision = result.object.decision;
+                reason = result.object.reason;
+                lastError = null;
+                break;
+            } catch (e) {
+                lastError = e;
+                console.error(`AI review error (attempt ${attempt}):`, e);
+            }
+        }
+        if (lastError) {
+            // Roll back the attempts increment — this wasn't a real review
+            // (Anthropic / network failure). Also rewind kyb_status.
+            await supabase
+                .from("business_profiles")
+                .update({
+                    kyb_status: existing ? "pending_review" : "pending",
+                    attempts: existing?.attempts ?? 0,
+                })
+                .eq("id", profile.id);
+            return json({
+                decision: "reject",
+                reason:
+                    "El revisor con IA no respondió ahora mismo. No te descontamos un intento — probá de nuevo en unos segundos. Tus datos del formulario quedan como estaban.",
+                status: "ai_unavailable",
+                attempts: existing?.attempts ?? 0,
+                onchainTxHashes: {fuji: null, l1: null},
+                wavynode: null,
+            }, 200);
         }
     }
 

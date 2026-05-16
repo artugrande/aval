@@ -39,7 +39,8 @@ export interface WavynodeAml {
 export interface KybReviewResponse {
     decision: "approve" | "reject";
     reason: string;
-    status: "approved" | "rejected";
+    /** `ai_unavailable` is a soft failure — the form data is preserved and no attempt is counted. */
+    status: "approved" | "rejected" | "ai_unavailable";
     attempts: number;
     onchainTxHashes: {fuji: string | null; l1: string | null};
     wavynode: WavynodeAml | null;
