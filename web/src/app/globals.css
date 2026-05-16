@@ -260,7 +260,7 @@ h1.hero-title .word {
 }
 .hero-sub {
     font-size: clamp(16px, 1.4vw, 19px);
-    color: var(--text-dim);
+    color: #fff;
     line-height: 1.55;
     max-width: 640px;
     margin: 0 auto 44px;
