@@ -1,0 +1,57 @@
+{
+    "Name": "aval",
+    "VM": "Subnet-EVM",
+    "VMVersion": "v0.8.0",
+    "RPCVersion": 44,
+    "Subnet": "aval",
+    "ExternalToken": false,
+    "TokenName": "AVL Token",
+    "TokenSymbol": "AVL",
+    "ChainID": "",
+    "Version": "1.4.0",
+    "Networks": {
+        "Local Network": {
+            "SubnetID": "2W9boARgCWL25z6pMFNtkCfNA5v28VGg9PmBgUJfuKndEdhrvw",
+            "BlockchainID": "XZLVa6KkKoh4TN1cEHJE6WEF2xP7avP3Gbg1cqD9Dx2Rsg4zx",
+            "RPCVersion": 44,
+            "TeleporterMessengerAddress": "0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf",
+            "TeleporterRegistryAddress": "0xC6E3dB5A48B66b27eA890EAD975f165aD9BC870B",
+            "RPCEndpoints": [
+                "http://127.0.0.1:9654/ext/bc/XZLVa6KkKoh4TN1cEHJE6WEF2xP7avP3Gbg1cqD9Dx2Rsg4zx/rpc"
+            ],
+            "WSEndpoints": [
+                "ws://127.0.0.1:9654/ext/bc/XZLVa6KkKoh4TN1cEHJE6WEF2xP7avP3Gbg1cqD9Dx2Rsg4zx/ws"
+            ],
+            "BootstrapValidators": [
+                {
+                    "NodeID": "NodeID-Ds1rVdUBHMQnZXtjLRNem1LCG4Auwo4HX",
+                    "Weight": 100,
+                    "Balance": 100000000,
+                    "BLSPublicKey": "0xad3c45cf39d5f36161a3929478249348cc174747b5a2dc7cac9f78a51823c53596043828ed699ad7c8fde3075547b897",
+                    "BLSProofOfPossession": "0xae32c56d480255b40ff1d53190d7877c147a6aaa4353054d53dc8deccfc46c84edc1de5bc0815c8f369f6bf24a90187f116989d9166c3290d83c29872ff87455f4dbcdcb6ba780dc569caaf18d98ce70f3ad8b07cafc560d9b1359024dc4695a",
+                    "ChangeOwnerAddr": "P-custom18jma8ppw3nhx5r4ap8clazz0dps7rv5u9xde7p",
+                    "ValidationID": "jbVejeab5dHjhakduNgg8vFh6iMrHJ9MsMDSzFLdedp7KQ2sL"
+                }
+            ],
+            "ClusterName": "aval-local-node-local-network",
+            "ValidatorManagerAddress": "0x0Feedc0de0000000000000000000000000000000",
+            "ValidatorManagerBlockchainID": "XZLVa6KkKoh4TN1cEHJE6WEF2xP7avP3Gbg1cqD9Dx2Rsg4zx",
+            "ValidatorManagerRPCEndpoint": "http://127.0.0.1:9654/ext/bc/XZLVa6KkKoh4TN1cEHJE6WEF2xP7avP3Gbg1cqD9Dx2Rsg4zx/rpc",
+            "SpecializedValidatorManagerAddress": ""
+        }
+    },
+    "ImportedFromAPM": false,
+    "ImportedVMID": "",
+    "CustomVMRepoURL": "",
+    "CustomVMBranch": "",
+    "CustomVMBuildScript": "",
+    "TeleporterReady": true,
+    "TeleporterKey": "cli-teleporter-deployer",
+    "TeleporterVersion": "v1.0.0",
+    "RunRelayer": true,
+    "SubnetEVMMainnetChainID": 0,
+    "ValidatorManagement": "Proof Of Authority",
+    "ValidatorManagerOwner": "0x9c3Cf7A804C7c17B945250AAA6a0530690EAff54",
+    "ProxyContractOwner": "0x9c3Cf7A804C7c17B945250AAA6a0530690EAff54",
+    "Sovereign": true
+}

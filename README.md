@@ -91,7 +91,9 @@ The issuer key (whitelisted in `IssuerRegistry`) lives in Supabase secrets. The 
 
 ## Live deployment
 
-Everything runs on **Avalanche Fuji testnet** (chainId 43113). All contracts are **source-verified** on Snowtrace.
+The **public demo** runs on **Avalanche Fuji testnet** (chainId 43113). All contracts are **source-verified** on Snowtrace.
+
+A parallel deployment runs on our own **Aval L1** (Subnet-EVM, chainId 6043, native token `AVL`, PoA validators) — see [`infra/l1`](./infra/l1) for the genesis + reproduction steps. The L1 is the architectural foundation for v2: gas paid in USDC, permissioned validators (banks/regulated entities), throughput dedicated to credit operations.
 
 | Contract        | Address                                                                                                                       |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -135,6 +137,7 @@ Everything runs on **Avalanche Fuji testnet** (chainId 43113). All contracts are
 
 ```
 aval/
+├── infra/l1/          Aval L1 (Subnet-EVM) reproducible genesis + setup
 ├── contracts/         Foundry workspace
 │   ├── src/
 │   │   ├── LendingPool.sol     ERC-4626 USDC vault
