@@ -734,6 +734,79 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* ===== About the builder ===== */}
+            <section id="builder" className="landing">
+                <div className="container">
+                    <div className="reveal">
+                        <div className="eyebrow-2">About the builder</div>
+                        <h2 className="section-title">
+                            Construido por <span className="accent">una persona</span>, no por un team de 20.
+                        </h2>
+                    </div>
+
+                    <div className="builder-card reveal">
+                        <div className="glow" />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile.jpg" alt="Arturo Grande" className="builder-photo" />
+                        <div className="builder-info">
+                            <h3 className="builder-name">Arturo Grande</h3>
+                            <div className="builder-role">Product Builder</div>
+
+                            <div className="builder-bio">
+                                <p>
+                                    <strong>Product &amp; Marketing</strong> para startups web3 desde 2022. Escalé una
+                                    fintech de <strong>$5M a $65M USD</strong> procesados en 3 años.
+                                </p>
+                                <p>
+                                    Gané <strong>9 hackathons</strong> en distintas blockchains: Celo, Polkadot,
+                                    ETHGlobal, Avalanche, GenLayer, Worldcoin y Stellar.
+                                </p>
+                                <p>
+                                    Founder de{" "}
+                                    <a href="https://desafia.tech" target="_blank" rel="noreferrer">
+                                        desafia.tech
+                                    </a>{" "}
+                                    — plataforma educativa que enseña a programar con IA.
+                                </p>
+                            </div>
+
+                            <div className="builder-tags">
+                                <span className="builder-tag">Celo</span>
+                                <span className="builder-tag">Polkadot</span>
+                                <span className="builder-tag">ETHGlobal</span>
+                                <span className="builder-tag">Avalanche</span>
+                                <span className="builder-tag">GenLayer</span>
+                                <span className="builder-tag">Worldcoin</span>
+                                <span className="builder-tag">Stellar</span>
+                            </div>
+
+                            <div className="builder-links">
+                                <a className="builder-link" href="https://x.com/ArtuGrande" target="_blank" rel="noreferrer">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M18.244 2H21.5l-7.5 8.572L23 22h-6.844l-5.36-7.01L4.7 22H1.444l8.02-9.165L1 2h7.018l4.844 6.4L18.244 2zm-1.2 18h1.808L7.05 4h-1.9l11.894 16z" />
+                                    </svg>
+                                    @ArtuGrande
+                                </a>
+                                <a className="builder-link" href="https://desafia.tech" target="_blank" rel="noreferrer">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="2" y1="12" x2="22" y2="12" />
+                                        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                                    </svg>
+                                    desafia.tech
+                                </a>
+                                <a className="builder-link" href="https://github.com/artugrande/aval" target="_blank" rel="noreferrer">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-1.18-.02-2.14-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.67 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.17a11 11 0 015.8 0c2.2-1.48 3.17-1.17 3.17-1.17.63 1.58.23 2.75.12 3.04.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.37-5.25 5.66.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .3.21.67.8.55C20.22 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+                                    </svg>
+                                    Code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* ===== Final CTAs ===== */}
             <section id="cta" className="landing">
                 <div className="container">
