@@ -328,7 +328,7 @@ export default function Home() {
                 <div className="container">
                     <div className="reveal">
                         <div className="eyebrow-2">Por qué Aval es distinto</div>
-                        <h2 className="section-title">Pensado para PyMEs de LatAm, no para bancos tradicionales.</h2>
+                        <h2 className="section-title">Pensado para PyMEs de LatAm.</h2>
                         <p className="section-lead">
                             Construimos nuestra propia infraestructura financiera sobre Avalanche para ofrecer una
                             experiencia más rápida, transparente y predecible desde el día uno.

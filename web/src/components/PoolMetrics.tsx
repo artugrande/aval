@@ -2,17 +2,17 @@
 
 import {useEffect, useMemo, useRef, useState} from "react";
 import {useReadContract, useReadContracts} from "wagmi";
-import {avalancheFuji} from "wagmi/chains";
 
 import {creditManagerAbi, getContracts, lendingPoolAbi} from "@/lib/contracts";
+import {avalL1} from "@/lib/wagmi-chains";
 
 /**
- * Live pool metrics for the lender section. Reads Avalanche Fuji (the public
- * deployment) so visitors see the same numbers without connecting a wallet.
- * Animates count-up the first time the component is on-screen.
+ * Live pool metrics for the lender section. Reads Aval L1 (our own Subnet-EVM
+ * on Avacloud) so visitors see the production numbers without connecting a
+ * wallet. Animates count-up the first time the component is on-screen.
  */
 export function PoolMetrics() {
-    const contracts = getContracts(avalancheFuji.id);
+    const contracts = getContracts(avalL1.id);
     const rootRef = useRef<HTMLDivElement>(null);
     const yieldRef = useRef<HTMLDivElement>(null);
     const repaidRef = useRef<HTMLDivElement>(null);
@@ -26,14 +26,14 @@ export function PoolMetrics() {
         abi: lendingPoolAbi,
         functionName: "convertToAssets",
         args: [1_000_000n],
-        chainId: avalancheFuji.id,
+        chainId: avalL1.id,
     });
 
     const {data: nextLoanId} = useReadContract({
         address: contracts.creditManager,
         abi: creditManagerAbi,
         functionName: "nextLoanId",
-        chainId: avalancheFuji.id,
+        chainId: avalL1.id,
     });
 
     const loanIds = useMemo<bigint[]>(() => {
@@ -52,7 +52,7 @@ export function PoolMetrics() {
                     abi: creditManagerAbi,
                     functionName: "loans" as const,
                     args: [id] as const,
-                    chainId: avalancheFuji.id,
+                    chainId: avalL1.id,
                 }) as const,
         ),
         query: {enabled: loanIds.length > 0},
@@ -128,7 +128,7 @@ export function PoolMetrics() {
                 </div>
                 <div className="pool-metric-l">Tasa de pago</div>
             </div>
-            <div className="pool-metric-foot">Pool de Avalanche Fuji · datos on-chain en vivo</div>
+            <div className="pool-metric-foot">Pool de Aval L1 · datos on-chain en vivo</div>
         </div>
     );
 }
