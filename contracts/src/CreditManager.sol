@@ -3,6 +3,7 @@ pragma solidity ^0.8.27;
 
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC4626} from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -13,7 +14,10 @@ import {IssuerRegistry} from "./IssuerRegistry.sol";
 /// @title CreditManager
 /// @notice Verifies an EIP-712 credit attestation signed by a whitelisted issuer,
 ///         opens a fixed-term uncollateralized loan, and handles repayment / default.
-contract CreditManager is EIP712 {
+/// @dev On repay, the loan fee is split between the lending pool (lenders' yield)
+///      and a protocol treasury. Default split is 85% lenders / 15% protocol —
+///      adjustable by the owner up to MAX_PROTOCOL_FEE_BPS (30%).
+contract CreditManager is EIP712, Ownable {
     using SafeERC20 for IERC20;
 
     // ---------- Types ----------
@@ -40,14 +44,21 @@ contract CreditManager is EIP712 {
         "CreditAttestation(address borrower,uint256 maxCap,uint64 expiresAt,uint256 nonce,bytes32 scoreId)"
     );
 
-    uint16 public constant MAX_FEE_BPS = 5_000; // 50% absolute cap
+    uint16 public constant MAX_FEE_BPS = 5_000; // 50% absolute cap (borrower loan fee)
     uint16 public constant MAX_TENOR_DAYS = 365;
+    uint16 public constant MAX_PROTOCOL_FEE_BPS = 3_000; // 30% absolute ceiling on protocol cut
+    uint16 public constant DEFAULT_PROTOCOL_FEE_BPS = 1_500; // 15% — the v1 sustainability number
 
     // ---------- State ----------
 
     LendingPool public immutable pool;
     IssuerRegistry public immutable registry;
     IERC20 public immutable asset;
+
+    /// @notice Protocol cut on loan fees, in basis points (out of 10_000).
+    uint16 public protocolFeeBps;
+    /// @notice Address that receives the protocol's share of every repayment.
+    address public protocolTreasury;
 
     uint256 public nextLoanId;
     mapping(uint256 => Loan) public loans;
@@ -64,15 +75,27 @@ contract CreditManager is EIP712 {
         uint16 feeBps,
         bytes32 scoreId
     );
-    event LoanRepaid(uint256 indexed loanId, uint256 totalPaid);
+    event LoanRepaid(uint256 indexed loanId, uint256 totalPaid, uint256 protocolCut, uint256 lenderCut);
     event LoanDefaulted(uint256 indexed loanId);
+    event ProtocolFeeBpsUpdated(uint16 oldBps, uint16 newBps);
+    event ProtocolTreasuryUpdated(address indexed oldTreasury, address indexed newTreasury);
 
     // ---------- Init ----------
 
-    constructor(LendingPool pool_, IssuerRegistry registry_) EIP712("Aval", "1") {
+    constructor(
+        LendingPool pool_,
+        IssuerRegistry registry_,
+        address protocolTreasury_,
+        address initialOwner_
+    ) EIP712("Aval", "1") Ownable(initialOwner_) {
+        require(protocolTreasury_ != address(0), "AVAL/zero-treasury");
         pool = pool_;
         registry = registry_;
         asset = IERC20(IERC4626(address(pool_)).asset());
+        protocolTreasury = protocolTreasury_;
+        protocolFeeBps = DEFAULT_PROTOCOL_FEE_BPS;
+        emit ProtocolTreasuryUpdated(address(0), protocolTreasury_);
+        emit ProtocolFeeBpsUpdated(0, DEFAULT_PROTOCOL_FEE_BPS);
     }
 
     // ---------- Core: borrow / repay / default ----------
@@ -116,6 +139,8 @@ contract CreditManager is EIP712 {
         emit LoanOpened(loanId, msg.sender, amount, tenorDays, feeBps, att.scoreId);
     }
 
+    /// @notice Repay a loan. Principal goes back to the pool; loan fee is split
+    ///         between the pool (lenders' yield) and the protocol treasury.
     function repay(uint256 loanId) external {
         Loan storage l = loans[loanId];
         require(l.borrower != address(0), "AVAL/no-loan");
@@ -123,15 +148,21 @@ contract CreditManager is EIP712 {
         require(l.borrower == msg.sender, "AVAL/not-borrower");
 
         uint256 fee = (l.principal * l.feeBps) / 10_000;
+        uint256 protocolCut = (fee * protocolFeeBps) / 10_000;
+        uint256 lenderCut = fee - protocolCut;
         uint256 total = l.principal + fee;
 
         l.repaid = true;
         outstanding[msg.sender] -= l.principal;
 
-        // Principal + fee back to the pool. Fee accrues as pool yield (totalAssets grows).
-        asset.safeTransferFrom(msg.sender, address(pool), total);
+        // Principal + lender's share of the fee → pool (boosts share price).
+        asset.safeTransferFrom(msg.sender, address(pool), l.principal + lenderCut);
+        // Protocol cut → treasury (separate from pool).
+        if (protocolCut > 0) {
+            asset.safeTransferFrom(msg.sender, protocolTreasury, protocolCut);
+        }
 
-        emit LoanRepaid(loanId, total);
+        emit LoanRepaid(loanId, total, protocolCut, lenderCut);
     }
 
     /// @notice Mark a loan as defaulted after maturity. Anyone can call.
@@ -146,6 +177,22 @@ contract CreditManager is EIP712 {
         outstanding[l.borrower] -= l.principal;
 
         emit LoanDefaulted(loanId);
+    }
+
+    // ---------- Owner-only protocol controls ----------
+
+    function setProtocolFeeBps(uint16 bps) external onlyOwner {
+        require(bps <= MAX_PROTOCOL_FEE_BPS, "AVAL/protocol-fee-too-high");
+        uint16 old = protocolFeeBps;
+        protocolFeeBps = bps;
+        emit ProtocolFeeBpsUpdated(old, bps);
+    }
+
+    function setProtocolTreasury(address treasury) external onlyOwner {
+        require(treasury != address(0), "AVAL/zero-treasury");
+        address old = protocolTreasury;
+        protocolTreasury = treasury;
+        emit ProtocolTreasuryUpdated(old, treasury);
     }
 
     // ---------- Views ----------

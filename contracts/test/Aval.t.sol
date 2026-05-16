@@ -27,6 +27,7 @@ contract AvalEndToEndTest is Test {
     address owner = makeAddr("owner");
     address lender = makeAddr("lender");
     address borrower = makeAddr("borrower");
+    address treasury = makeAddr("treasury");
 
     uint256 issuerPk = 0xA11CE;
     address issuer; // derived from issuerPk
@@ -49,7 +50,7 @@ contract AvalEndToEndTest is Test {
         usdc = new MockUSDC();
         registry = new IssuerRegistry(owner);
         pool = new LendingPool(IERC20(address(usdc)), owner);
-        manager = new CreditManager(pool, registry);
+        manager = new CreditManager(pool, registry, treasury, owner);
         pool.setCreditManager(address(manager));
         registry.addIssuer(issuer);
         vm.stopPrank();
@@ -62,7 +63,7 @@ contract AvalEndToEndTest is Test {
         vm.stopPrank();
     }
 
-    function test_borrow_and_repay_growsPoolAssets() public {
+    function test_borrow_and_repay_splitsFeeBetweenPoolAndTreasury() public {
         // Issuer attests: borrower can owe up to 1,000 USDC, expires in 1h, nonce=0
         CreditManager.CreditAttestation memory att = CreditManager.CreditAttestation({
             borrower: borrower,
@@ -80,16 +81,65 @@ contract AvalEndToEndTest is Test {
         assertEq(usdc.balanceOf(borrower), 500e6, "borrower received principal");
         assertEq(manager.outstanding(borrower), 500e6, "outstanding tracked");
         assertEq(pool.totalAssets(), 9_500e6, "pool assets dropped by principal");
+        assertEq(usdc.balanceOf(treasury), 0, "treasury starts empty");
 
-        // Borrower repays principal + 2% fee = 510 USDC. Mint the fee from thin air for the test.
+        // Borrower repays principal + 2% fee = 510 USDC.
+        // Default protocol fee = 1500 bps (15%), so:
+        //   fee total = 10 USDC
+        //   protocol cut = 1.5 USDC → treasury
+        //   lender cut   = 8.5 USDC → pool
         usdc.mint(borrower, 10e6);
         vm.startPrank(borrower);
         usdc.approve(address(manager), type(uint256).max);
         manager.repay(loanId);
         vm.stopPrank();
 
-        assertEq(pool.totalAssets(), 10_010e6, "pool assets grew by the fee");
+        assertEq(pool.totalAssets(), 10_008_500_000, "pool grew by lender's 85% share of fee");
+        assertEq(usdc.balanceOf(treasury), 1_500_000, "treasury received 15% of fee");
         assertEq(manager.outstanding(borrower), 0, "outstanding cleared");
+    }
+
+    function test_setProtocolFeeBps_ownerOnly_andCapped() public {
+        // Non-owner cannot change the fee
+        vm.expectRevert();
+        vm.prank(borrower);
+        manager.setProtocolFeeBps(500);
+
+        // Owner can, up to the cap
+        vm.prank(owner);
+        manager.setProtocolFeeBps(2_500);
+        assertEq(manager.protocolFeeBps(), 2_500);
+
+        // Cannot exceed MAX_PROTOCOL_FEE_BPS = 3000
+        vm.prank(owner);
+        vm.expectRevert(bytes("AVAL/protocol-fee-too-high"));
+        manager.setProtocolFeeBps(3_001);
+    }
+
+    function test_repay_withZeroProtocolFee_allGoesToPool() public {
+        vm.prank(owner);
+        manager.setProtocolFeeBps(0);
+
+        CreditManager.CreditAttestation memory att = CreditManager.CreditAttestation({
+            borrower: borrower,
+            maxCap: 1_000e6,
+            expiresAt: uint64(block.timestamp + 1 hours),
+            nonce: 0,
+            scoreId: bytes32(uint256(1))
+        });
+        bytes memory sig = _signAttestation(att);
+
+        vm.prank(borrower);
+        uint256 loanId = manager.borrowWithTerm(500e6, 30, 200, att, sig);
+
+        usdc.mint(borrower, 10e6);
+        vm.startPrank(borrower);
+        usdc.approve(address(manager), type(uint256).max);
+        manager.repay(loanId);
+        vm.stopPrank();
+
+        assertEq(pool.totalAssets(), 10_010e6, "with 0% protocol fee, entire fee goes to pool");
+        assertEq(usdc.balanceOf(treasury), 0, "treasury receives nothing");
     }
 
     function test_borrow_revertsOnBadSigner() public {

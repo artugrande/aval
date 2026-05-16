@@ -581,6 +581,89 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* ===== Business model ===== */}
+            <section id="model" className="landing">
+                <div className="container">
+                    <div className="reveal">
+                        <div className="eyebrow-2">Modelo de negocio</div>
+                        <h2 className="section-title">
+                            Sostenible desde el <span className="accent">día uno</span>.
+                        </h2>
+                        <p className="section-lead">
+                            Cobramos un <strong style={{color: "var(--text)"}}>15% sobre las fees</strong> que pagan
+                            los borrowers. El otro 85% va a lenders como yield. Sin costo de capital propio, sin
+                            originación bancaria, sin riesgo en nuestros libros — solo el spread.
+                        </p>
+                    </div>
+
+                    <div className="model-card reveal">
+                        <div className="glow" />
+                        <div className="model-split">
+                            <div className="model-share">
+                                <div className="model-share-v">85%</div>
+                                <div className="model-share-l">Para lenders</div>
+                                <div className="model-share-sub">Va al pool como yield real</div>
+                            </div>
+                            <div className="model-share">
+                                <div className="model-share-v accent">15%</div>
+                                <div className="model-share-l">Protocolo</div>
+                                <div className="model-share-sub">Financia desarrollo + operación</div>
+                            </div>
+                        </div>
+
+                        <div className="model-example">
+                            <div className="model-example-label">Ejemplo</div>
+                            <div className="model-example-body">
+                                Una PyME en L3 toma <strong>$1,000 USDC</strong> a 30 días con un fee del 3,50%. Al
+                                repagar paga <strong>$1,035 USDC</strong>: <strong>$29,75</strong> van al pool de
+                                lenders (yield) y <strong>$5,25</strong> al protocolo. Sin cargos ocultos, sin
+                                spreads en la moneda — todo en USDC, transparente on-chain.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="model-compare reveal">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th className="num">Toma del interés</th>
+                                    <th>Qué cubre con eso</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="aval-row">
+                                    <td>Aval</td>
+                                    <td className="num">15%</td>
+                                    <td>Protocolo, AI verification, rails on-chain</td>
+                                </tr>
+                                <tr>
+                                    <td>Aave / Compound</td>
+                                    <td className="num">10–15%</td>
+                                    <td>Solo protocolo (sin AI, sin LatAm)</td>
+                                </tr>
+                                <tr>
+                                    <td>Konfio (MX) · Creditas (BR)</td>
+                                    <td className="num">20–35%</td>
+                                    <td>Origen, capital, balance, ops</td>
+                                </tr>
+                                <tr>
+                                    <td>Banco tradicional LatAm</td>
+                                    <td className="num">30–50%+</td>
+                                    <td>Sucursales, comité de crédito, libro, compliance</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p className="model-foot">
+                        En el roadmap: origination fee opcional (0,5% al abrir), late fees por atrasos, marketplace de
+                        issuers (cuando vengan partners como Konfio / Creditas / Belvo) y features premium para
+                        lenders institucionales.
+                    </p>
+                </div>
+            </section>
+
             {/* ===== Promo cards (Claude / Avalanche) ===== */}
             <section id="partners" className="landing">
                 <div className="container">

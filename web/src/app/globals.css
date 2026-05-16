@@ -920,6 +920,159 @@ h2.section-title .accent {
     }
 }
 
+/* ===== Business model section ===== */
+.model-card {
+    position: relative;
+    overflow: hidden;
+    margin-top: 64px;
+    padding: 56px 48px;
+    border: 1px solid var(--border-strong);
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.005));
+}
+.model-card .glow {
+    position: absolute;
+    pointer-events: none;
+    width: 320px;
+    height: 320px;
+    background: var(--accent);
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.18;
+    top: -120px;
+    right: -120px;
+}
+.model-split {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    position: relative;
+}
+.model-share {
+    text-align: center;
+    padding: 24px 16px;
+}
+.model-share-v {
+    font-size: clamp(64px, 9vw, 120px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.model-share-v.accent {
+    color: var(--accent);
+}
+.model-share-l {
+    font-size: 13px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 16px;
+}
+.model-share-sub {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    line-height: 1.5;
+}
+.model-example {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 32px;
+    align-items: start;
+}
+.model-example-label {
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+}
+.model-example-body {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+.model-example-body strong {
+    color: var(--text);
+}
+.model-compare {
+    margin-top: 32px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+}
+.model-compare table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.model-compare thead th {
+    background: rgba(255, 255, 255, 0.025);
+    padding: 14px 20px;
+    text-align: left;
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+}
+.model-compare tbody td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+}
+.model-compare tbody tr:last-child td {
+    border-bottom: none;
+}
+.model-compare tbody tr.aval-row td {
+    background: rgba(239, 77, 74, 0.06);
+    color: var(--text);
+    font-weight: 500;
+}
+.model-compare tbody tr.aval-row td:first-child {
+    color: var(--accent);
+    font-weight: 600;
+}
+.model-compare td.num {
+    font-family: var(--font-mono), monospace;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+.model-foot {
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--text-faint);
+    text-align: center;
+    line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+    .model-card {
+        padding: 32px 24px;
+    }
+    .model-split {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .model-example {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .model-compare {
+        font-size: 13px;
+    }
+    .model-compare thead th,
+    .model-compare tbody td {
+        padding: 10px 14px;
+    }
+}
+
 /* ===== Pool metrics (lender section) ===== */
 .pool-metrics {
     display: grid;

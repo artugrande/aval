@@ -37,9 +37,11 @@ contract Deploy is Script {
             console.log("Using existing USDC at:", asset);
         }
 
+        address treasury = vm.envOr("PROTOCOL_TREASURY", deployer);
+
         IssuerRegistry registry = new IssuerRegistry(deployer);
         LendingPool pool = new LendingPool(IERC20(asset), deployer);
-        CreditManager manager = new CreditManager(pool, registry);
+        CreditManager manager = new CreditManager(pool, registry, treasury, deployer);
 
         pool.setCreditManager(address(manager));
 
