@@ -98,48 +98,60 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ───── Ventajas de la L1 ───── */}
+            {/* ───── Lo que ganás con Aval ───── */}
             <section className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
                 <div className="mx-auto max-w-6xl px-6 py-20">
                     <div className="max-w-3xl">
                         <span className="text-xs font-semibold uppercase tracking-widest text-red-600 dark:text-red-400">
-                            Por qué nuestra propia Avalanche L1
+                            Por qué Aval es distinto
                         </span>
                         <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                            Infraestructura diseñada para crédito institucional.
+                            Pensado para tu PyME, no para el sistema.
                         </h2>
                         <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-                            Una L1 dedicada (Subnet-EVM) nos da control de cada capa: validators, gas, throughput,
-                            compliance. Eso es lo que las L2 genéricas de Ethereum no pueden ofrecer.
+                            Construimos nuestra propia red dedicada en Avalanche para no depender de bancos lentos ni
+                            de aplicaciones caóticas. Vos solo ves los beneficios:
                         </p>
                     </div>
 
                     <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <Advantage
-                            title="Gas pagado en USDC"
-                            body="Una PyME en Guadalajara no necesita comprar AVAX para repagar un préstamo. Configurable a nivel L1 — fee token = activo subyacente."
+                            title="Todo en dólares"
+                            body="Pedís dólares (USDC), repagás dólares, las comisiones también. No necesitás comprar criptomonedas raras ni cambiar a una moneda que no entendés."
                         />
                         <Advantage
-                            title="Validators institucionales"
-                            body="El validator set lo controlamos. Bancos, fintechs reguladas y entidades del ecosistema firman cada bloque — KYC institucional a nivel de infraestructura."
+                            title="Tarifas claras desde el día 1"
+                            body="Antes de pedir el préstamo ves exactamente cuánto vas a pagar. Sin letra chica, sin comisiones que aparecen después, sin tasas variables."
                         />
                         <Advantage
-                            title="Throughput dedicado"
-                            body="2 segundos de block time exclusivos para crédito. Cero contención con NFTs, memecoins o flash loans de otras apps."
+                            title="Auditable como un banco"
+                            body="Cada préstamo y cada repago queda registrado en un libro público que cualquiera puede verificar — vos, un auditor, el SAT/AFIP. Misma transparencia que un banco regulado."
                         />
                         <Advantage
-                            title="Permissioning granular"
-                            body="Native Minter, Tx Allow List, Contract Deployer Allow List, Reward Manager — todos los precompiles configurables por governance."
+                            title="Tu reputación crece y te pertenece"
+                            body="Cada préstamo repagado a tiempo aumenta tu límite. Esa historia es tuya — podés mostrarla a otros lenders en el futuro, no estás atado solo a Aval."
                         />
                         <Advantage
-                            title="Costos predecibles"
-                            body="Set fixed gas pricing por bloque. Para issuers que postean attestations cada hora, el costo es presupuestable, no sujeto a subastas."
+                            title="Rápido, sin papeles"
+                            body="Cada operación tarda segundos, no días. No hay '3 días hábiles', no hay 'mandanos los papeles por mail'. Conectás tu wallet y operás."
                         />
                         <Advantage
-                            title="Interop nativa"
-                            body="ICM (Interchain Messaging) y Warp activados — capital se bridgea desde C-Chain mainnet sin terceros."
+                            title="Diseñado para LatAm"
+                            body="Pensado desde el día uno para PyMEs de México, Argentina, Colombia, Perú y el resto de la región. No es un producto gringo traducido al español."
                         />
                     </div>
+
+                    <p className="mt-10 text-center text-xs text-zinc-500">
+                        ¿Sos developer y querés ver el código?{" "}
+                        <a
+                            href="https://github.com/artugrande/aval"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+                        >
+                            github.com/artugrande/aval
+                        </a>
+                    </p>
                 </div>
             </section>
 
