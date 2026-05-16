@@ -533,11 +533,11 @@ export default function Home() {
                             body={
                                 <>
                                     <p>
-                                        Cada préstamo, repago y default es una tx pública. Lo mirás vos, tu contador o un
-                                        regulador.
+                                        Cada préstamo, repago y default queda registrado en una infraestructura pública
+                                        que vos podés revisar.
                                     </p>
                                     <p className="note">
-                                        Snowtrace + Aval Explorer indexan todo on-chain. Sin gestores opacos.
+                                        Snowtrace muestra cada operación en Avalanche Fuji. Sin gestores opacos.
                                     </p>
                                 </>
                             }
@@ -567,13 +567,15 @@ export default function Home() {
                     </div>
 
                     <p className="levels-foot" style={{textAlign: "center", marginLeft: "auto", marginRight: "auto"}}>
-                        <strong style={{color: "var(--text)"}}>Riesgo honesto:</strong> en v1 los defaults los absorben los
-                        lenders pro-rata. La tranche junior con first-loss buffer está en el roadmap v2. No prometemos APR
-                        específico — vas a ver el TVL, el yield acumulado del pool y la tasa de default real en{" "}
+                        <strong style={{color: "var(--text)"}}>Te lo decimos derecho:</strong> si un borrower no paga, esa
+                        pérdida se reparte entre todos los lenders del pool. Estamos trabajando en una capa extra que va
+                        a absorber esas pérdidas antes de tocar tu plata. No te prometemos un rendimiento fijo —
+                        preferimos que veas con tus propios ojos cuánto rinde el pool y cuántos préstamos no se pagaron
+                        en{" "}
                         <Link href="/stats" style={{color: "var(--accent)", textDecoration: "underline"}}>
                             /stats
-                        </Link>{" "}
-                        en tiempo real.
+                        </Link>
+                        , en vivo.
                     </p>
                 </div>
             </section>
