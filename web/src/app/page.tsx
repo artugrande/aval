@@ -202,8 +202,10 @@ export default function Home() {
                     <div className="mt-12 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
                         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-start gap-4">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src="/claudelogo.png" alt="Claude (Anthropic)" className="h-12 w-12 shrink-0 object-contain" />
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-black p-2">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src="/claudelogo.png" alt="Claude (Anthropic)" className="h-full w-full object-contain" />
+                                </div>
                                 <div>
                                     <h3 className="text-base font-semibold">
                                         Verificación con IA en{" "}
@@ -238,8 +240,10 @@ export default function Home() {
                     <div className="mt-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
                         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-start gap-4">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src="/avax.svg" alt="Avalanche" className="h-12 w-12 shrink-0 object-contain" />
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-black p-2">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src="/avax.svg" alt="Avalanche" className="h-full w-full object-contain" />
+                                </div>
                                 <div>
                                     <h3 className="text-base font-semibold">
                                         <span className="text-red-600 dark:text-red-400">Aval L1</span> — nuestra blockchain dedicada en Avalanche

@@ -29,7 +29,15 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                     <Header />
                     <div className="flex-1">{children}</div>
                     <footer className="border-t border-zinc-200 px-6 py-6 text-center text-sm text-zinc-500 dark:border-zinc-800">
-                        Hackathon LatAm Institucional · Avalanche Fuji · v0.0.1
+                        Aval — todos los derechos reservados 2026 — construido para la{" "}
+                        <a
+                            href="https://build.avax.network/events/8a8ee2e9-d91d-4087-adba-c1221b72e407"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:underline"
+                        >
+                            Hackathon LatAm Institucional · Avalanche 2026
+                        </a>
                     </footer>
                 </Providers>
             </body>
