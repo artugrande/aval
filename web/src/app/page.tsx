@@ -198,8 +198,40 @@ export default function Home() {
                         />
                     </div>
 
-                    {/* L1 mention */}
+                    {/* AI verification callout */}
                     <div className="mt-12 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
+                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 className="text-base font-semibold">
+                                    🤖 Verificación con IA en{" "}
+                                    <span className="text-red-600 dark:text-red-400">segundos</span>, no semanas
+                                </h3>
+                                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                    Tu Business Profile lo revisa <strong>Claude Haiku 4.5</strong> de{" "}
+                                    <a
+                                        href="https://www.anthropic.com"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="underline hover:text-zinc-900 dark:hover:text-zinc-100"
+                                    >
+                                        Anthropic
+                                    </a>{" "}
+                                    en menos de 15 segundos. Sin papeles, sin filas, sin "3 días hábiles". Si te
+                                    aprobamos, tu wallet queda <strong>registrada on-chain en ambas redes</strong>{" "}
+                                    automáticamente — auditable por cualquiera.
+                                </p>
+                            </div>
+                            <Link
+                                href="/borrow"
+                                className="shrink-0 rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-white dark:border-zinc-700 dark:hover:bg-black"
+                            >
+                                Probar ahora →
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* L1 callout */}
+                    <div className="mt-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="text-base font-semibold">
