@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt} from "wagmi";
 
 import {erc20Abi, FAUCET_MAX_MICRO, getContracts, isDeployed, lendingPoolAbi, mockUsdcAbi} from "@/lib/contracts";
@@ -18,14 +18,14 @@ export default function LendPage() {
 
     const deployed = isDeployed(contracts.lendingPool);
 
-    const {data: tvl} = useReadContract({
+    const {data: tvl, refetch: refetchTvl} = useReadContract({
         address: contracts.lendingPool,
         abi: lendingPoolAbi,
         functionName: "totalAssets",
         query: {enabled: deployed},
     });
 
-    const {data: shares} = useReadContract({
+    const {data: shares, refetch: refetchShares} = useReadContract({
         address: contracts.lendingPool,
         abi: lendingPoolAbi,
         functionName: "balanceOf",
@@ -33,7 +33,7 @@ export default function LendPage() {
         query: {enabled: deployed && !!address},
     });
 
-    const {data: shareValue} = useReadContract({
+    const {data: shareValue, refetch: refetchShareValue} = useReadContract({
         address: contracts.lendingPool,
         abi: lendingPoolAbi,
         functionName: "convertToAssets",
@@ -41,7 +41,7 @@ export default function LendPage() {
         query: {enabled: deployed && !!shares},
     });
 
-    const {data: usdcBalance} = useReadContract({
+    const {data: usdcBalance, refetch: refetchUsdcBalance} = useReadContract({
         address: contracts.usdc,
         abi: erc20Abi,
         functionName: "balanceOf",
@@ -49,7 +49,7 @@ export default function LendPage() {
         query: {enabled: isDeployed(contracts.usdc) && !!address},
     });
 
-    const {data: allowance} = useReadContract({
+    const {data: allowance, refetch: refetchAllowance} = useReadContract({
         address: contracts.usdc,
         abi: erc20Abi,
         functionName: "allowance",
@@ -57,8 +57,21 @@ export default function LendPage() {
         query: {enabled: isDeployed(contracts.usdc) && !!address},
     });
 
+    const refetchAll = useCallback(() => {
+        refetchTvl();
+        refetchShares();
+        refetchShareValue();
+        refetchUsdcBalance();
+        refetchAllowance();
+    }, [refetchTvl, refetchShares, refetchShareValue, refetchUsdcBalance, refetchAllowance]);
+
     const {writeContract, isPending} = useWriteContract();
     const {isLoading: isMining, isSuccess} = useWaitForTransactionReceipt({hash: txHash});
+
+    // Auto-refetch all reads when a deposit/withdraw tx lands.
+    useEffect(() => {
+        if (isSuccess) refetchAll();
+    }, [isSuccess, refetchAll]);
 
     if (!isConnected) return <ConnectNotice />;
     if (!deployed) return <WrongChainNotice />;
@@ -120,6 +133,7 @@ export default function LendPage() {
                 usdcBalance={usdcBalance as bigint | undefined}
                 usdcAddress={contracts.usdc}
                 chainId={chainId}
+                onMinted={refetchAll}
             />
 
 
@@ -173,10 +187,9 @@ export default function LendPage() {
                                     rel="noreferrer"
                                     className="underline"
                                 >
-                                    Ver tx
+                                    Ver tx ↗
                                 </a>
-                            )}{" "}
-                            · Actualizá para ver el balance nuevo.
+                            )}
                         </p>
                     )}
                 </div>
@@ -189,13 +202,20 @@ function FaucetBanner({
     usdcBalance,
     usdcAddress,
     chainId,
+    onMinted,
 }: {
     usdcBalance: bigint | undefined;
     usdcAddress: `0x${string}`;
     chainId: number;
+    onMinted: () => void;
 }) {
     const {writeContract, isPending, data: hash} = useWriteContract();
     const {isLoading: mining, isSuccess} = useWaitForTransactionReceipt({hash});
+
+    // Refetch parent state when the faucet tx confirms.
+    useEffect(() => {
+        if (isSuccess) onMinted();
+    }, [isSuccess, onMinted]);
     const onFaucet = () =>
         writeContract({
             address: usdcAddress,
