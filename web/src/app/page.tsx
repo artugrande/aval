@@ -739,9 +739,6 @@ export default function Home() {
                 <div className="container">
                     <div className="reveal">
                         <div className="eyebrow-2">About the builder</div>
-                        <h2 className="section-title">
-                            Construido por <span className="accent">una persona</span>, no por un team de 20.
-                        </h2>
                     </div>
 
                     <div className="builder-card reveal">
@@ -772,16 +769,6 @@ export default function Home() {
                                     </a>{" "}
                                     — plataforma educativa que enseña a programar con IA.
                                 </p>
-                            </div>
-
-                            <div className="builder-tags">
-                                <span className="builder-tag">Celo</span>
-                                <span className="builder-tag">Polkadot</span>
-                                <span className="builder-tag">ETHGlobal</span>
-                                <span className="builder-tag">Avalanche</span>
-                                <span className="builder-tag">GenLayer</span>
-                                <span className="builder-tag">Worldcoin</span>
-                                <span className="builder-tag">Stellar</span>
                             </div>
 
                             <div className="builder-socials">
@@ -815,9 +802,9 @@ export default function Home() {
                             <div className="builder-links">
                                 <a className="builder-link" href="https://desafia.tech" target="_blank" rel="noreferrer">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <line x1="2" y1="12" x2="22" y2="12" />
-                                        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                        <polyline points="15 3 21 3 21 9" />
+                                        <line x1="10" y1="14" x2="21" y2="3" />
                                     </svg>
                                     desafia.tech
                                 </a>
