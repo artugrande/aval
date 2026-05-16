@@ -181,6 +181,26 @@ function CoverSlide() {
             <p className="tagline">
                 Crédito global para <span style={{color: "var(--accent)"}}>PyMEs</span> de LatAm
             </p>
+            <div className="deck-cover-stack">
+                <span className="deck-cover-stack-l">Powered by</span>
+                <div className="deck-cover-stack-row">
+                    <span className="deck-cover-pill">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/claudelogo.png" alt="Claude" />
+                        Claude
+                    </span>
+                    <span className="deck-cover-pill">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/avax.svg" alt="Avalanche" />
+                        Avalanche
+                    </span>
+                    <span className="deck-cover-pill">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/wavynode-dark.svg" alt="WavyNode" />
+                        WavyNode
+                    </span>
+                </div>
+            </div>
         </div>
     );
 }
