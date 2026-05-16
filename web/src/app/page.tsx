@@ -638,11 +638,6 @@ export default function Home() {
                                     <td>Protocolo, AI verification, rails on-chain</td>
                                 </tr>
                                 <tr>
-                                    <td>Aave / Compound</td>
-                                    <td className="num">10–15%</td>
-                                    <td>Solo protocolo (sin AI, sin LatAm)</td>
-                                </tr>
-                                <tr>
                                     <td>Konfio (MX) · Creditas (BR)</td>
                                     <td className="num">20–35%</td>
                                     <td>Origen, capital, balance, ops</td>
