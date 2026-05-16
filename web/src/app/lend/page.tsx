@@ -6,7 +6,7 @@ import {useAccount, useReadContract, useWriteContract, useWaitForTransactionRece
 import {erc20Abi, FAUCET_MAX_MICRO, getContracts, isDeployed, lendingPoolAbi, mockUsdcAbi} from "@/lib/contracts";
 import {useChainId} from "wagmi";
 import {WrongChainNotice} from "@/components/WrongChainNotice";
-import {formatUsdc, parseUsdc, snowtraceUrl} from "@/lib/format";
+import {chainLabel, explorerUrl, formatUsdc, parseUsdc} from "@/lib/format";
 
 export default function LendPage() {
     const {address, isConnected} = useAccount();
@@ -116,7 +116,11 @@ export default function LendPage() {
                 <Stat label="Valor de tus shares" value={`$${formatUsdc(shareValue as bigint | undefined)} USDC`} />
             </div>
 
-            <FaucetBanner usdcBalance={usdcBalance as bigint | undefined} usdcAddress={contracts.usdc} />
+            <FaucetBanner
+                usdcBalance={usdcBalance as bigint | undefined}
+                usdcAddress={contracts.usdc}
+                chainId={chainId}
+            />
 
 
             <div className="mt-10 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
@@ -162,9 +166,16 @@ export default function LendPage() {
                     {isSuccess && txHash && (
                         <p className="mt-3 text-sm text-green-600 dark:text-green-400">
                             ✓ Transacción confirmada.{" "}
-                            <a href={snowtraceUrl(txHash, "tx")} target="_blank" rel="noreferrer" className="underline">
-                                Ver tx
-                            </a>{" "}
+                            {explorerUrl(chainId, txHash, "tx") && (
+                                <a
+                                    href={explorerUrl(chainId, txHash, "tx")!}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="underline"
+                                >
+                                    Ver tx
+                                </a>
+                            )}{" "}
                             · Actualizá para ver el balance nuevo.
                         </p>
                     )}
@@ -174,7 +185,15 @@ export default function LendPage() {
     );
 }
 
-function FaucetBanner({usdcBalance, usdcAddress}: {usdcBalance: bigint | undefined; usdcAddress: `0x${string}`}) {
+function FaucetBanner({
+    usdcBalance,
+    usdcAddress,
+    chainId,
+}: {
+    usdcBalance: bigint | undefined;
+    usdcAddress: `0x${string}`;
+    chainId: number;
+}) {
     const {writeContract, isPending, data: hash} = useWriteContract();
     const {isLoading: mining, isSuccess} = useWaitForTransactionReceipt({hash});
     const onFaucet = () =>
@@ -184,16 +203,17 @@ function FaucetBanner({usdcBalance, usdcAddress}: {usdcBalance: bigint | undefin
             functionName: "faucet",
             args: [FAUCET_MAX_MICRO],
         });
+    const txUrl = hash ? explorerUrl(chainId, hash, "tx") : null;
     return (
         <div className="mt-6 flex flex-col gap-3 rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div className="text-sm font-medium">Faucet de prueba (Fuji testnet)</div>
+                <div className="text-sm font-medium">Faucet de prueba · {chainLabel(chainId)}</div>
                 <div className="text-xs text-zinc-500">
                     Tu wallet tiene ${formatUsdc(usdcBalance)} mUSDC. Tirá faucet para mintear 10k y depositar.
-                    {isSuccess && hash && (
+                    {isSuccess && txUrl && (
                         <>
                             {" · "}
-                            <a href={snowtraceUrl(hash, "tx")} target="_blank" rel="noreferrer" className="underline">
+                            <a href={txUrl} target="_blank" rel="noreferrer" className="underline">
                                 Ver tx ↗
                             </a>
                         </>

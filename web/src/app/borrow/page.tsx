@@ -17,7 +17,7 @@ import {
     loanTotalDue,
 } from "@/lib/contracts";
 import {useChainId} from "wagmi";
-import {formatUsdc, parseUsdc, snowtraceUrl} from "@/lib/format";
+import {explorerUrl, formatUsdc, parseUsdc} from "@/lib/format";
 import {kybSubmit, scoreAttest, type AttestationResponse, type KybSubmitResponse} from "@/lib/api";
 import {useBorrowerLoans} from "@/hooks/useBorrowerLoans";
 import {WrongChainNotice} from "@/components/WrongChainNotice";
@@ -267,7 +267,7 @@ function BorrowForm({
                     <p className="mt-3 text-sm text-green-600 dark:text-green-400">
                         ✓ Préstamo abierto on-chain.{" "}
                         <a
-                            href={snowtraceUrl(txHash, "tx")}
+                            href={explorerUrl(chainId, txHash, "tx") ?? "#"}
                             target="_blank"
                             rel="noreferrer"
                             className="underline"
@@ -436,8 +436,8 @@ function LoanCard({
                                 </a>
                             </p>
                         )}
-                        {hash && (
-                            <a href={snowtraceUrl(hash, "tx")} target="_blank" rel="noreferrer" className="text-xs text-zinc-500 underline">
+                        {hash && explorerUrl(chainId, hash, "tx") && (
+                            <a href={explorerUrl(chainId, hash, "tx")!} target="_blank" rel="noreferrer" className="text-xs text-zinc-500 underline">
                                 Ver tx ↗
                             </a>
                         )}
