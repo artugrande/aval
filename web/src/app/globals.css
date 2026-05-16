@@ -1043,6 +1043,36 @@ h2.section-title .accent {
     fill: currentColor;
 }
 
+.builder-socials {
+    margin-top: 22px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.builder-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid var(--border-strong);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    transition: all 0.2s;
+}
+.builder-icon:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.builder-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
 @media (max-width: 760px) {
     .builder-card {
         grid-template-columns: 1fr;
@@ -1056,7 +1086,8 @@ h2.section-title .accent {
         height: 120px;
     }
     .builder-tags,
-    .builder-links {
+    .builder-links,
+    .builder-socials {
         justify-content: center;
     }
 }
