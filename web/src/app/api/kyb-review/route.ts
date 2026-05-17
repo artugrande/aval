@@ -13,12 +13,12 @@
 //      non-blocking — first registration also triggers the analysis)
 //   4. Run WavyNode scan-risk on Ethereum mainnet (the most-indexed chain,
 //      same address space as Avalanche). Hard-reject if flagged.
-//   5. Ask Claude (haiku) via AI SDK with a Zod schema, passing AML context.
+//   5. Ask Claude (haiku) via Vercel AI Gateway + AI SDK with a Zod schema,
+//      passing AML context. No Anthropic API key needed on Vercel — OIDC.
 //   6. If approved → fire BorrowerRegistry.addBorrower on BOTH chains in parallel
 //   7. Update DB with final status + AI reason + tx hashes + WavyNode results
 //   8. Return result
 
-import {anthropic} from "@ai-sdk/anthropic";
 import {generateObject} from "ai";
 import {createClient} from "@supabase/supabase-js";
 import {
@@ -198,8 +198,11 @@ export async function POST(req: Request) {
         let lastError: unknown = null;
         for (let attempt = 1; attempt <= 2; attempt++) {
             try {
+                // Routed through Vercel AI Gateway: on Vercel deployments
+                // the SDK auto-auths via OIDC (no API key required) and
+                // billing/quotas/failover are handled by the gateway.
                 const result = await generateObject({
-                    model: anthropic("claude-haiku-4-5"),
+                    model: "anthropic/claude-haiku-4-5",
                     schema: ReviewSchema,
                     prompt: buildPrompt(body, wavyScan),
                 });
