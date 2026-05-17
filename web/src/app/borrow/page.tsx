@@ -363,7 +363,7 @@ function PendingNotice({onRefresh}: {onRefresh: () => void}) {
             </p>
             <button
                 onClick={onRefresh}
-                className="mt-4 rounded-lg border border-blue-300 bg-white px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-100"
+                className="mt-4 rounded-lg border border-blue-300 bg-white px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-100 hover:text-blue-950 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-100 dark:hover:bg-blue-800 dark:hover:text-white"
             >
                 Recargar estado
             </button>
