@@ -81,7 +81,7 @@ async function callSupabase<T>(path: string, body: unknown): Promise<T> {
     const base = functionsBaseUrl();
     if (!base) throw new Error("Supabase not configured (set NEXT_PUBLIC_SUPABASE_URL).");
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const res = await fetch(`${base}${path}`, {
+    return withRetry(`${base}${path}`, {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -89,16 +89,18 @@ async function callSupabase<T>(path: string, body: unknown): Promise<T> {
         },
         body: JSON.stringify(body),
     });
-    const data = await res.json().catch(() => ({error: "non_json_response"}));
-    if (!res.ok) throw new Error(typeof data === "object" && data && "error" in data ? String(data.error) : "request_failed");
-    return data as T;
 }
 
-async function callLocal<T>(path: string, body: unknown): Promise<T> {
-    // Generous timeout (90s) so the browser doesn't bail on a slow Vercel
-    // cold start or a long Claude review. We also retry network/abort errors
-    // once because 'Failed to fetch' in the wild is almost always transient
-    // (ad blocker, brief connectivity drop, browser stack hiccup).
+/// Resilient JSON-fetch wrapper used by both local Next.js routes and Supabase
+/// edge functions.
+///   - 90s timeout via AbortController so the browser doesn't bail on Vercel
+///     cold starts or long Claude reviews.
+///   - Retries once on transient network errors ('Failed to fetch',
+///     NetworkError, AbortError). Server-side 4xx/5xx throw via `!res.ok` and
+///     are NOT retried — those bubble up with the body's error field.
+///   - On final 'Failed to fetch' surfaces a clearer Spanish message hinting
+///     at the likely cause (ad blocker, extension, network).
+async function withRetry<T>(url: string, init: RequestInit): Promise<T> {
     const TIMEOUT_MS = 90_000;
     const attempts = 2;
     let lastErr: unknown;
@@ -106,16 +108,7 @@ async function callLocal<T>(path: string, body: unknown): Promise<T> {
         const ctl = new AbortController();
         const timer = setTimeout(() => ctl.abort(), TIMEOUT_MS);
         try {
-            const res = await fetch(path, {
-                method: "POST",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify(body),
-                signal: ctl.signal,
-                // Force the browser to send the whole request (some extensions
-                // block 'fetch' from anonymous origins; keepalive helps in tab-close
-                // scenarios but otherwise behaves the same).
-                keepalive: false,
-            });
+            const res = await fetch(url, {...init, signal: ctl.signal});
             clearTimeout(timer);
             const data = await res.json().catch(() => ({error: "non_json_response"}));
             if (!res.ok) {
@@ -125,8 +118,6 @@ async function callLocal<T>(path: string, body: unknown): Promise<T> {
         } catch (e) {
             clearTimeout(timer);
             lastErr = e;
-            // Only retry on transient network-level errors. Server-side 4xx/5xx
-            // throw via the `!res.ok` branch above and don't reach this catch.
             const msg = e instanceof Error ? e.message : "";
             const isTransient =
                 msg === "Failed to fetch" ||
@@ -135,7 +126,6 @@ async function callLocal<T>(path: string, body: unknown): Promise<T> {
                 msg.includes("network") ||
                 (e instanceof DOMException && e.name === "AbortError");
             if (!isTransient || i === attempts - 1) break;
-            // small backoff so we don't dogpile if the issue is just a cold start
             await new Promise((r) => setTimeout(r, 800));
         }
     }
@@ -145,6 +135,14 @@ async function callLocal<T>(path: string, body: unknown): Promise<T> {
         );
     }
     throw lastErr instanceof Error ? lastErr : new Error("request_failed");
+}
+
+async function callLocal<T>(path: string, body: unknown): Promise<T> {
+    return withRetry(path, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(body),
+    });
 }
 
 // KYB review runs on our Next.js API route (AI SDK + on-chain write).
