@@ -29,12 +29,13 @@ const corsHeaders = {
 const CAP_BY_LEVEL_USD = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000, 14500, 20000];
 const MAX_LEVEL = 11;
 
-// Public on-chain addresses for the L1 CreditManager (Aval L1 = chainId 45521).
-// We can't read process.env-style envs for L1-specific stuff because the
-// Supabase function only has CREDIT_MANAGER_ADDRESS set (Fuji). These are
-// already public in NEXT_PUBLIC_L1_CREDIT_MANAGER_ADDRESS, so hardcoding
-// them here is fine.
-const CREDIT_MANAGER_L1_FALLBACK = "0x2a5F76A2BfECbda26B8D91d2D5773409985DE8b7" as Address;
+// Public on-chain addresses for the CreditManager on each chain. These are
+// already public in NEXT_PUBLIC_*_CREDIT_MANAGER_ADDRESS, so hardcoding them
+// as fallbacks here is fine — the env vars (if set in Supabase secrets)
+// override these. We use fallbacks because rotating Supabase secrets
+// requires CLI auth that's not available in this environment.
+const CREDIT_MANAGER_FUJI_FALLBACK = "0x937eeE3A0B53977F22c80c5D9A2DFE11d883bF52" as Address;
+const CREDIT_MANAGER_L1_FALLBACK = "0x92B2Dad115D85f264cc25506c79D04df58352A42" as Address;
 
 const AVAL_TYPED_DATA_TYPES = {
     CreditAttestation: [
@@ -86,7 +87,7 @@ Deno.serve(async (req) => {
 
 async function handle(req: Request): Promise<Response> {
     const ISSUER_PRIVATE_KEY = Deno.env.get("ISSUER_PRIVATE_KEY") as Hex | undefined;
-    const CREDIT_MANAGER_ADDRESS = Deno.env.get("CREDIT_MANAGER_ADDRESS") as Address | undefined;
+    const CREDIT_MANAGER_ADDRESS = (Deno.env.get("CREDIT_MANAGER_ADDRESS") as Address | undefined) ?? CREDIT_MANAGER_FUJI_FALLBACK;
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const BORROWER_REGISTRY_FUJI = Deno.env.get("BORROWER_REGISTRY_FUJI") as Address | undefined;
@@ -95,7 +96,7 @@ async function handle(req: Request): Promise<Response> {
     const AVAL_L1_CHAIN_ID = Number(Deno.env.get("AVAL_L1_CHAIN_ID") ?? "0");
     const CREDIT_MANAGER_L1 = (Deno.env.get("CREDIT_MANAGER_L1") as Address | undefined) ?? CREDIT_MANAGER_L1_FALLBACK;
 
-    if (!ISSUER_PRIVATE_KEY || !CREDIT_MANAGER_ADDRESS || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY ||
+    if (!ISSUER_PRIVATE_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY ||
         !BORROWER_REGISTRY_FUJI || !BORROWER_REGISTRY_L1 || !AVAL_L1_RPC || AVAL_L1_CHAIN_ID === 0) {
         return json({error: "server_misconfigured"}, 500);
     }
