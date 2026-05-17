@@ -145,10 +145,17 @@ async function callLocal<T>(path: string, body: unknown): Promise<T> {
     });
 }
 
-// KYB review runs on our Next.js API route (AI SDK + on-chain write).
+// All client → server JSON traffic is same-origin (aval.uno/api/*). The
+// kyb-status + score-attest routes are thin Next.js proxies that forward to
+// the underlying Supabase edge functions. Why proxy: privacy extensions,
+// corporate proxies, and CORS preflights can silently kill cross-origin
+// fetches even when the server is healthy. Routing through aval.uno
+// eliminates that failure mode end-to-end.
 export const kybReview = (input: KybReviewInput) => callLocal<KybReviewResponse>("/api/kyb-review", input);
-
-// Status + attestation stay on Supabase (lightweight reads).
-export const kybStatus = (input: {wallet: Address}) => callSupabase<KybStatusResponse>("/kyb-status", input);
+export const kybStatus = (input: {wallet: Address}) => callLocal<KybStatusResponse>("/api/kyb-status", input);
 export const scoreAttest = (input: {wallet: Address; chainId?: number; ttlSeconds?: number}) =>
-    callSupabase<AttestationResponse>("/score-attest", input);
+    callLocal<AttestationResponse>("/api/score-attest", input);
+
+// Direct Supabase access — only used server-side. Keep around for future
+// server callers that don't need to go through the proxy.
+void callSupabase;
