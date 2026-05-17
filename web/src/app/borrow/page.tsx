@@ -796,11 +796,11 @@ function LoanCard({loan, wallet, openTxHash, onRepaid, onError}: {loan: Loan; wa
         }
     };
 
-    // Live countdown — re-render every 30s so the "Vence en …" string ticks
-    // without forcing the parent to re-fetch.
+    // Live countdown — re-render every second so the "Vence en …" string
+    // visibly ticks during the demo.
     const [now, setNow] = useState(() => Date.now());
     useEffect(() => {
-        const id = setInterval(() => setNow(Date.now()), 30_000);
+        const id = setInterval(() => setNow(Date.now()), 1_000);
         return () => clearInterval(id);
     }, []);
     const remaining = formatRemaining(Number(loan.maturityAt) * 1000 - now);
@@ -844,8 +844,13 @@ function LoanCard({loan, wallet, openTxHash, onRepaid, onError}: {loan: Loan; wa
                 {(status === "active" || status === "overdue") && (
                     <div className="flex flex-col items-end gap-2">
                         <button onClick={doAction} disabled={isPending || mining || !hasFunds} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-40">
-                            {isPending || mining ? "Procesando…" : !hasFunds ? "Saldo insuficiente" : needsApproval ? "Aprobar para pagar" : "Pagar préstamo"}
+                            {isPending || mining ? "Procesando…" : !hasFunds ? "Saldo insuficiente" : "Pagar préstamo"}
                         </button>
+                        {needsApproval && hasFunds && !isPending && !mining && (
+                            <p className="text-right text-[11px] text-zinc-500">
+                                Paso 1/2: aprobar mUSDC · luego clickeás de nuevo para pagar
+                            </p>
+                        )}
                         {!hasFunds && (
                             <p className="text-right text-xs text-zinc-500">
                                 Faltan ${formatUsdc(shortfall)} mUSDC.<br />
@@ -864,20 +869,21 @@ function LoanCard({loan, wallet, openTxHash, onRepaid, onError}: {loan: Loan; wa
     );
 }
 
-/// Format a positive/negative remaining-millis as "Xd Yh Zm" (or just "Yh Zm"
-/// when less than 1 day, or "Zm" when less than 1 hour). Returns absLabel for
-/// display so the caller can render the sign via context ("Vence en X" vs
-/// "Vencido hace X").
+/// Format a positive/negative remaining-millis as "Xd Yh Zm Ws" (or a
+/// shorter form depending on magnitude). Returns absLabel + sign so the
+/// caller can render "Vence en X" vs "Vencido hace X".
 function formatRemaining(remainingMs: number): {absLabel: string; isPast: boolean} {
     const absMs = Math.abs(remainingMs);
-    const totalMin = Math.floor(absMs / 60_000);
-    const days = Math.floor(totalMin / (60 * 24));
-    const hours = Math.floor((totalMin % (60 * 24)) / 60);
-    const mins = totalMin % 60;
+    const totalSec = Math.floor(absMs / 1_000);
+    const days = Math.floor(totalSec / 86_400);
+    const hours = Math.floor((totalSec % 86_400) / 3_600);
+    const mins = Math.floor((totalSec % 3_600) / 60);
+    const secs = totalSec % 60;
     const parts: string[] = [];
     if (days > 0) parts.push(`${days}d`);
     if (hours > 0 || days > 0) parts.push(`${hours}h`);
-    parts.push(`${mins}m`);
+    if (mins > 0 || hours > 0 || days > 0) parts.push(`${mins}m`);
+    parts.push(`${secs}s`);
     return {absLabel: parts.join(" "), isPast: remainingMs < 0};
 }
 
