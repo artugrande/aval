@@ -27,6 +27,7 @@ import {
     type WavynodeAml,
 } from "@/lib/api";
 import {useBorrowerLoans} from "@/hooks/useBorrowerLoans";
+import {useLoanTxHashes} from "@/hooks/useLoanTxHashes";
 import {WrongChainNotice} from "@/components/WrongChainNotice";
 
 type ProfileStatus = KybStatusResponse["status"];
@@ -660,8 +661,12 @@ function BorrowForm({wallet, wavynode, onError}: {wallet: Address; wavynode: Wav
                     <Field label="Monto (USDC)">
                         <input type="number" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="500" className="input" />
                     </Field>
-                    <Field label="Plazo (días)">
-                        <input type="number" min={1} max={365} value={tenor} onChange={(e) => setTenor(Number(e.target.value))} className="input" />
+                    <Field label="Plazo">
+                        <select className="input" value={tenor} onChange={(e) => setTenor(Number(e.target.value))}>
+                            <option value={30}>30 días</option>
+                            <option value={60}>60 días</option>
+                            <option value={90}>90 días</option>
+                        </select>
                     </Field>
                 </div>
 
@@ -693,12 +698,30 @@ function BorrowForm({wallet, wavynode, onError}: {wallet: Address; wavynode: Wav
                 )}
             </div>
 
-            <LoanList wallet={wallet} loans={loans} onLoanRepaid={onLoanRepaid} onError={onError} />
+            <LoanList wallet={wallet} loans={loans} chainId={chainId} creditManager={contracts.creditManager} refetchKey={txHash} onLoanRepaid={onLoanRepaid} onError={onError} />
         </div>
     );
 }
 
-function LoanList({wallet, loans, onLoanRepaid, onError}: {wallet: Address; loans: Loan[]; onLoanRepaid: () => void; onError: (e: string) => void}) {
+function LoanList({
+    wallet,
+    loans,
+    chainId,
+    creditManager,
+    refetchKey,
+    onLoanRepaid,
+    onError,
+}: {
+    wallet: Address;
+    loans: Loan[];
+    chainId: number;
+    creditManager: Address;
+    refetchKey: unknown;
+    onLoanRepaid: () => void;
+    onError: (e: string) => void;
+}) {
+    const openTxHashes = useLoanTxHashes(creditManager, wallet, chainId, refetchKey);
+
     if (loans.length === 0) {
         return (
             <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
@@ -711,13 +734,20 @@ function LoanList({wallet, loans, onLoanRepaid, onError}: {wallet: Address; loan
         <div className="space-y-3">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">Tus préstamos</h2>
             {loans.map((loan) => (
-                <LoanCard key={loan.loanId.toString()} loan={loan} wallet={wallet} onRepaid={onLoanRepaid} onError={onError} />
+                <LoanCard
+                    key={loan.loanId.toString()}
+                    loan={loan}
+                    wallet={wallet}
+                    openTxHash={openTxHashes.get(loan.loanId)}
+                    onRepaid={onLoanRepaid}
+                    onError={onError}
+                />
             ))}
         </div>
     );
 }
 
-function LoanCard({loan, wallet, onRepaid, onError}: {loan: Loan; wallet: Address; onRepaid: () => void; onError: (e: string) => void}) {
+function LoanCard({loan, wallet, openTxHash, onRepaid, onError}: {loan: Loan; wallet: Address; openTxHash: Hex | undefined; onRepaid: () => void; onError: (e: string) => void}) {
     const chainId = useChainId();
     const contracts = getContracts(chainId);
     const status = loanStatus(loan);
@@ -766,8 +796,17 @@ function LoanCard({loan, wallet, onRepaid, onError}: {loan: Loan; wallet: Addres
         }
     };
 
-    const maturity = new Date(Number(loan.maturityAt) * 1000);
-    const daysToMaturity = Math.ceil((maturity.getTime() - Date.now()) / 86_400_000);
+    // Live countdown — re-render every 30s so the "Vence en …" string ticks
+    // without forcing the parent to re-fetch.
+    const [now, setNow] = useState(() => Date.now());
+    useEffect(() => {
+        const id = setInterval(() => setNow(Date.now()), 30_000);
+        return () => clearInterval(id);
+    }, []);
+    const remaining = formatRemaining(Number(loan.maturityAt) * 1000 - now);
+
+    const openTxUrl = openTxHash ? explorerUrl(chainId, openTxHash, "tx") : null;
+    const actionTxUrl = hash ? explorerUrl(chainId, hash, "tx") : null;
 
     return (
         <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
@@ -788,14 +827,24 @@ function LoanCard({loan, wallet, onRepaid, onError}: {loan: Loan; wallet: Addres
                             : status === "defaulted"
                               ? "En default · L0 + blacklist (no podés pedir nuevos préstamos)"
                               : status === "overdue"
-                                ? `Vencido hace ${-daysToMaturity}d · Pagá ya o pasás a default → L0 + blacklist`
-                                : `Vence en ${daysToMaturity}d`}
+                                ? `Vencido hace ${remaining.absLabel} · Pagá ya o pasás a default → L0 + blacklist`
+                                : `Vence en ${remaining.absLabel}`}
                     </div>
+                    {openTxUrl && (
+                        <a
+                            href={openTxUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-2 inline-block text-xs text-zinc-500 underline hover:text-zinc-700 dark:hover:text-zinc-300"
+                        >
+                            Ver tx de origen ↗
+                        </a>
+                    )}
                 </div>
                 {(status === "active" || status === "overdue") && (
                     <div className="flex flex-col items-end gap-2">
                         <button onClick={doAction} disabled={isPending || mining || !hasFunds} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-40">
-                            {isPending || mining ? "Procesando…" : !hasFunds ? "Saldo insuficiente" : needsApproval ? "Aprobar mUSDC" : "Repagar"}
+                            {isPending || mining ? "Procesando…" : !hasFunds ? "Saldo insuficiente" : needsApproval ? "Aprobar para pagar" : "Pagar préstamo"}
                         </button>
                         {!hasFunds && (
                             <p className="text-right text-xs text-zinc-500">
@@ -803,14 +852,33 @@ function LoanCard({loan, wallet, onRepaid, onError}: {loan: Loan; wallet: Addres
                                 <a href="/lend" className="underline">Conseguir en /lend</a>
                             </p>
                         )}
-                        {hash && explorerUrl(chainId, hash, "tx") && (
-                            <a href={explorerUrl(chainId, hash, "tx")!} target="_blank" rel="noreferrer" className="text-xs text-zinc-500 underline">Ver tx ↗</a>
+                        {actionTxUrl && (
+                            <a href={actionTxUrl} target="_blank" rel="noreferrer" className="text-xs text-zinc-500 underline">
+                                Ver tx ↗
+                            </a>
                         )}
                     </div>
                 )}
             </div>
         </div>
     );
+}
+
+/// Format a positive/negative remaining-millis as "Xd Yh Zm" (or just "Yh Zm"
+/// when less than 1 day, or "Zm" when less than 1 hour). Returns absLabel for
+/// display so the caller can render the sign via context ("Vence en X" vs
+/// "Vencido hace X").
+function formatRemaining(remainingMs: number): {absLabel: string; isPast: boolean} {
+    const absMs = Math.abs(remainingMs);
+    const totalMin = Math.floor(absMs / 60_000);
+    const days = Math.floor(totalMin / (60 * 24));
+    const hours = Math.floor((totalMin % (60 * 24)) / 60);
+    const mins = totalMin % 60;
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0 || days > 0) parts.push(`${hours}h`);
+    parts.push(`${mins}m`);
+    return {absLabel: parts.join(" "), isPast: remainingMs < 0};
 }
 
 function StatusBadge({status}: {status: ReturnType<typeof loanStatus>}) {
